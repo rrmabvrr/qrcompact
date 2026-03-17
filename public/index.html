@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QRCompact - Link Curto + QR Code</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero card">
+        <h1>QRCompact</h1>
+        <p>Crie links curtos com redirecionamento e QR Code em segundos.</p>
+      </section>
+
+      <section class="card form-card">
+        <form id="shorten-form">
+          <label for="url-input">URL de destino</label>
+          <div class="input-row">
+            <input
+              id="url-input"
+              name="url"
+              type="url"
+              placeholder="https://seusite.com/pagina"
+              required
+            />
+            <button type="submit">Gerar</button>
+          </div>
+        </form>
+
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+
+        <div id="result" class="result hidden">
+          <a id="short-url" href="#" target="_blank" rel="noopener noreferrer"></a>
+          <img id="qr-image" alt="QR Code do link curto" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ultimos links</h2>
+        <ul id="links-list" class="links-list"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
