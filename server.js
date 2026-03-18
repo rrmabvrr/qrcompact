@@ -30,6 +30,7 @@ const insertLink = db.prepare(
   "INSERT INTO links (slug, original_url) VALUES (?, ?)"
 );
 const getBySlug = db.prepare("SELECT slug, original_url FROM links WHERE slug = ?");
+const updateBySlug = db.prepare("UPDATE links SET original_url = ? WHERE slug = ?");
 const listLinks = db.prepare(
   "SELECT slug, original_url, created_at FROM links ORDER BY id DESC LIMIT 100"
 );
@@ -95,6 +96,70 @@ app.get("/api/links", (req, res) => {
   }));
 
   return res.json(rows);
+});
+
+app.get("/api/links/:slug", async (req, res) => {
+  const { slug } = req.params;
+  const row = getBySlug.get(slug);
+
+  if (!row) {
+    return res.status(404).json({ error: "Link nao encontrado" });
+  }
+
+  const shortUrl = `${BASE_URL}/${row.slug}`;
+  const qrCodeDataUrl = await QRCode.toDataURL(shortUrl, {
+    errorCorrectionLevel: "M",
+    margin: 1,
+    width: 260
+  });
+
+  return res.json({
+    slug: row.slug,
+    originalUrl: row.original_url,
+    shortUrl,
+    qrCodeDataUrl
+  });
+});
+
+app.put("/api/links/:slug", (req, res) => {
+  const { slug } = req.params;
+  const { url } = req.body;
+
+  if (!url || !isValidHttpUrl(url)) {
+    return res.status(400).json({ error: "URL invalida. Use http:// ou https://" });
+  }
+
+  const existing = getBySlug.get(slug);
+  if (!existing) {
+    return res.status(404).json({ error: "Link nao encontrado" });
+  }
+
+  updateBySlug.run(url, slug);
+
+  return res.json({
+    slug,
+    originalUrl: url,
+    shortUrl: `${BASE_URL}/${slug}`
+  });
+});
+
+app.post("/api/qr", async (req, res) => {
+  const { data } = req.body;
+
+  if (!data || typeof data !== "string" || !data.trim()) {
+    return res.status(400).json({ error: "Dados invalidos" });
+  }
+
+  try {
+    const qrCodeDataUrl = await QRCode.toDataURL(data.trim(), {
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 300
+    });
+    return res.json({ qrCodeDataUrl });
+  } catch {
+    return res.status(500).json({ error: "Erro ao gerar QR Code" });
+  }
 });
 
 app.get("/:slug", (req, res, next) => {

@@ -1,47 +1,79 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QRCompact - Link Curto + QR Code</title>
     <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+</head>
+
+<body>
+    <header class="topnav">
+        <a href="/" class="brand">QRCompact</a>
+        <nav class="nav-links">
+            <a href="/" class="nav-active">Links Curtos</a>
+            <a href="/pix.html">Gerar Pix</a>
+        </nav>
+    </header>
+
     <main class="layout">
-      <section class="hero card">
-        <h1>QRCompact</h1>
-        <p>Crie links curtos com redirecionamento e QR Code em segundos.</p>
-      </section>
+        <section class="hero card">
+            <h1>QRCompact</h1>
+            <p>Crie links curtos com redirecionamento e QR Code em segundos.</p>
+        </section>
 
-      <section class="card form-card">
-        <form id="shorten-form">
-          <label for="url-input">URL de destino</label>
-          <div class="input-row">
-            <input
-              id="url-input"
-              name="url"
-              type="url"
-              placeholder="https://seusite.com/pagina"
-              required
-            />
-            <button type="submit">Gerar</button>
-          </div>
-        </form>
+        <section class="card form-card">
+            <form id="shorten-form">
+                <label for="url-input">URL de destino</label>
+                <div class="input-row">
+                    <input id="url-input" name="url" type="url" placeholder="https://seusite.com/pagina" required />
+                    <button type="submit">Gerar</button>
+                </div>
+            </form>
 
-        <p id="feedback" class="feedback" aria-live="polite"></p>
+            <p id="feedback" class="feedback" aria-live="polite"></p>
 
-        <div id="result" class="result hidden">
-          <a id="short-url" href="#" target="_blank" rel="noopener noreferrer"></a>
-          <img id="qr-image" alt="QR Code do link curto" />
-        </div>
-      </section>
+            <div id="result" class="result hidden">
+                <a id="short-url" href="#" target="_blank" rel="noopener noreferrer"></a>
+                <img id="qr-image" alt="QR Code do link curto" />
+            </div>
+        </section>
 
-      <section class="card">
-        <h2>Ultimos links</h2>
-        <ul id="links-list" class="links-list"></ul>
-      </section>
+        <section class="card">
+            <h2>Ultimos links</h2>
+            <ul id="links-list" class="links-list"></ul>
+        </section>
     </main>
 
+    <div id="details-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="details-title">
+        <div class="modal-content">
+            <h3 id="details-title">Detalhes do link</h3>
+            <p><strong>URL compacta:</strong> <a id="modal-short-url" href="#" target="_blank"
+                    rel="noopener noreferrer"></a></p>
+            <img id="modal-qr-image" alt="QR Code do link" />
+            <p><strong>URL original:</strong> <span style="color: #6e6e6e;" id="modal-original-url"></span></p>
+            <button id="close-modal-button" type="button">Fechar</button>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+        <div class="modal-content">
+            <h3 id="edit-title">Editar link</h3>
+            <p><strong>Slug:</strong> <span id="edit-slug"></span></p>
+            <form id="edit-form" class="edit-form">
+                <label for="edit-url-input">Nova URL de destino</label>
+                <input id="edit-url-input" name="url" type="url" required />
+                <p id="edit-feedback" class="feedback" aria-live="polite"></p>
+                <div class="modal-actions">
+                    <button id="cancel-edit-button" type="button" class="btn-ghost">Cancelar</button>
+                    <button id="save-edit-button" type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="app.js"></script>
-  </body>
+</body>
+
 </html>
