@@ -398,7 +398,7 @@ select {
     margin-bottom: 0.85rem;
 }
 
-.copy-section > label {
+.copy-section>label {
     font-size: 0.95rem;
     font-weight: 600;
 }
@@ -439,6 +439,19 @@ textarea {
 .btn-download:hover {
     background: var(--accent);
     color: var(--accent-contrast);
+}
+
+.pix-details {
+    margin-top: 0.85rem;
+    margin-bottom: 0.85rem;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.pix-details p {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95rem;
 }
 
 @media (max-width: 660px) {
