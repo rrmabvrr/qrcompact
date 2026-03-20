@@ -25,10 +25,6 @@ db.exec(`
 `);
 
 app.use(express.json());
-if (fs.existsSync(distDir)) {
-    app.use(express.static(distDir));
-}
-app.use(express.static(path.join(__dirname, "public")));
 
 const insertLink = db.prepare(
     "INSERT INTO links (slug, original_url) VALUES (?, ?)"
@@ -178,6 +174,19 @@ app.get("/:slug", (req, res, next) => {
     }
 
     return res.redirect(302, row.original_url);
+});
+
+if (fs.existsSync(distDir)) {
+    app.use(express.static(distDir));
+}
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("*", (req, res) => {
+    const indexFile = path.join(distDir, "index.html");
+    if (!fs.existsSync(indexFile)) {
+        return res.status(500).send("Build do front (dist/index.html) não encontrado");
+    }
+    return res.sendFile(indexFile);
 });
 
 app.listen(PORT, () => {
