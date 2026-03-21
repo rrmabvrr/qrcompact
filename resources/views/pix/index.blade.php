@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'QRCompact | Gerar Pix', 'page' => 'pix'])
+@extends('layouts.app', ['title' => 'Gerar QR Code Pix', 'page' => 'pix'])
 
 @section('content')
     <section class="hero">

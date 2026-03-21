@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'QRCompact | Links Curtos', 'page' => 'links'])
+@extends('layouts.app', ['title' => 'Links Curtos', 'page' => 'links'])
 
 @section('content')
     <section class="hero">
