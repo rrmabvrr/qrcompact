@@ -21,3 +21,4 @@ yarn-error.log
 /.vscode
 /.zed
 public_html
+/data/*.db

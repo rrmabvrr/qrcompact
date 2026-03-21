@@ -1,3 +1,5 @@
+import * as bootstrap from 'bootstrap';
+
 const body = document.body;
 const page = body.dataset.page;
 
@@ -81,6 +83,7 @@ function formatDate(isoString) {
 function setFeedback(element, message, isError = false) {
     element.textContent = message;
     element.classList.toggle('is-error', isError);
+    element.classList.toggle('text-danger', isError);
 }
 
 function setupLinksPage() {
@@ -97,6 +100,7 @@ function setupLinksPage() {
     const list = document.querySelector('[data-links-list]');
     const emptyState = document.querySelector('[data-links-empty]');
     const detailModal = document.querySelector('[data-detail-modal]');
+    const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
     const detailTitle = document.querySelector('[data-detail-title]');
     const detailUrl = document.querySelector('[data-detail-url]');
     const detailDestination = document.querySelector('[data-detail-destination]');
@@ -117,20 +121,17 @@ function setupLinksPage() {
 
         links.forEach((item) => {
             const article = document.createElement('article');
-            article.className = 'link-card';
+            article.className = 'link-item';
             article.innerHTML = `
-				<div class="link-card__header">
-					<div>
-						<a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-card__short">${item.shortUrl}</a>
-						<p class="link-card__meta">Criado em ${formatDate(item.createdAt)}</p>
-					</div>
-					<div class="link-card__actions">
-						<button type="button" class="button button--ghost" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-						<button type="button" class="button button--ghost" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
-					</div>
-				</div>
-				<p class="link-card__target" title="${item.originalUrl}">${compactUrlText(item.originalUrl)}</p>
-			`;
+                    <div class="link-item-info">
+                        <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
+                        <span class="link-target" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 60)}</span>
+                    </div>
+                    <div class="link-actions">
+                        <button type="button" class="btn-action" data-action="detail" data-slug="${item.slug}">Ver QR</button>
+                        <button type="button" class="btn-action" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                    </div>
+                `;
             list.appendChild(article);
         });
     }
@@ -145,13 +146,11 @@ function setupLinksPage() {
     }
 
     function openModal(modal) {
-        modal.hidden = false;
-        document.body.classList.add('has-modal');
+        bootstrap.Modal.getOrCreateInstance(modal).show();
     }
 
     function closeModal(modal) {
-        modal.hidden = true;
-        document.body.classList.remove('has-modal');
+        bootstrap.Modal.getOrCreateInstance(modal).hide();
     }
 
     createForm.addEventListener('submit', async (event) => {
@@ -165,6 +164,7 @@ function setupLinksPage() {
             }, 'Nao foi possivel gerar o link curto.');
 
             result.hidden = false;
+            if (qrPlaceholder) qrPlaceholder.hidden = true;
             resultLink.href = payload.shortUrl;
             resultLink.textContent = payload.shortUrl;
             resultQr.src = payload.qrCodeDataUrl;
@@ -234,25 +234,10 @@ function setupLinksPage() {
         }
     });
 
-    document.querySelectorAll('[data-close-modal]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            closeModal(modal);
-        });
-    });
-
-    document.querySelectorAll('.modal').forEach((modal) => {
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal(modal);
-            }
-        });
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            document.querySelectorAll('.modal:not([hidden])').forEach((modal) => closeModal(modal));
-        }
+    editModal.addEventListener('hidden.bs.modal', () => {
+        editingSlug = null;
+        editForm.reset();
+        setFeedback(editFeedback, '');
     });
 
     loadLinks();
@@ -272,6 +257,7 @@ function setupPixPage() {
     const result = document.querySelector('[data-pix-result]');
     const copyButton = document.querySelector('[data-pix-copy]');
     const copyFeedback = document.querySelector('[data-pix-copy-feedback]');
+    const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
 
     function syncPlaceholder() {
         key.placeholder = KEY_PLACEHOLDERS[keyType.value] || 'Informe sua chave Pix';
@@ -303,6 +289,7 @@ function setupPixPage() {
             payloadOutput.value = payload.payload;
             qrImage.src = payload.qrCodeDataUrl;
             result.hidden = false;
+            if (qrPlaceholder) qrPlaceholder.hidden = true;
             setFeedback(feedback, payload.message || 'Payload Pix gerado com sucesso.');
         } catch (error) {
             setFeedback(feedback, error.message, true);
