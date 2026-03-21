@@ -204,6 +204,31 @@ h4,
     padding: 1.25rem;
 }
 
+.links-dashboard {
+    align-items: stretch;
+}
+
+.links-hero-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.result-panel--horizontal {
+    grid-template-columns: minmax(0, 1.7fr) auto;
+    align-items: center;
+    column-gap: 1.5rem;
+}
+
+.result-panel__content {
+    min-width: 0;
+}
+
+.result-panel__media {
+    display: flex;
+    justify-content: center;
+}
+
 .detail-label {
     display: block;
     font-size: 0.82rem;
@@ -261,6 +286,14 @@ h4,
 
     .headline {
         font-size: clamp(1.8rem, 7vw, 2.7rem);
+    }
+
+    .result-panel--horizontal {
+        grid-template-columns: 1fr;
+    }
+
+    .result-panel__media {
+        justify-content: flex-start;
     }
 }
 

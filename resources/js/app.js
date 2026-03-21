@@ -123,17 +123,23 @@ function setupLinksPage() {
             article.className = 'card glass-card border-0 shadow-sm';
             article.innerHTML = `
                 <div class="card-body p-3 p-lg-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
-                        <div class="min-w-0">
-                            <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short d-inline-block text-decoration-none fw-semibold">${item.shortUrl}</a>
-                            <p class="small text-body-secondary mb-0 mt-2">Criado em ${formatDate(item.createdAt)}</p>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-4">
+                            <div class="min-w-0">
+                                <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short d-inline-block text-decoration-none fw-semibold">${item.shortUrl}</a>
+                                <p class="small text-body-secondary mb-0 mt-2">Criado em ${formatDate(item.createdAt)}</p>
+                            </div>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                        <div class="col-lg-5">
+                            <p class="link-target text-body-secondary mb-0" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 72)}</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="detail" data-slug="${item.slug}">Ver QR</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                            </div>
                         </div>
                     </div>
-                    <p class="link-target text-body-secondary mb-0 mt-3" title="${item.originalUrl}">${compactUrlText(item.originalUrl)}</p>
                 </div>
 			`;
             list.appendChild(article);
