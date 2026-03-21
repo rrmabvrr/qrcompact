@@ -11,7 +11,7 @@ O QRCompact entrega duas areas principais:
 
 ## Stack
 
-- PHP ^8.3
+- PHP ^8.2
 - Laravel 12
 - SQLite por padrao em `database/database.sqlite`
 - Suporte simples a MySQL via `.env`
@@ -105,7 +105,7 @@ Pix:
 
 ### Requisitos
 
-- PHP 8.3+
+- PHP 8.2+
 - Composer 2+
 - Node.js 20+
 - Extensoes PHP: `pdo_sqlite`, `sqlite3`, `gd`, `mbstring`, `openssl`, `fileinfo`, `tokenizer`, `ctype`, `json`
@@ -210,7 +210,7 @@ php artisan test
 ### Passo a passo explicito
 
 1. No hPanel, configure o dominio ou subdominio do projeto.
-2. Ajuste a versao do PHP para `8.3`.
+2. Ajuste a versao do PHP para `8.2` (ou superior).
 3. Defina o document root do dominio para a pasta `public` da aplicacao.
 4. Ative as extensoes necessarias: `pdo_sqlite`, `sqlite3`, `gd`, `mbstring`, `openssl`, `fileinfo`, `tokenizer`, `ctype`, `json`.
 5. Envie os arquivos da aplicacao para o servidor, preservando a estrutura do Laravel.
@@ -330,7 +330,7 @@ Checklist:
 ## Checklist final pos-deploy
 
 - dominio aponta para `public`
-- PHP 8.3 ativo
+- PHP 8.2+ ativo
 - extensoes PHP ativas, incluindo `gd`
 - `.env` configurado com `APP_URL` correto
 - `APP_KEY` gerado
