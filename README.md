@@ -250,6 +250,7 @@ npm run build
 ```
 
 Se Node nao estiver disponivel no servidor, execute localmente e envie a pasta `public/build` junto com `public/build/manifest.json`.
+Se o deploy na Hostinger for feito via Git, mantenha `public/build` versionado no repositorio para que o `@vite(...)` encontre o manifesto em producao.
 
 12. Otimize caches do Laravel:
 
@@ -315,6 +316,7 @@ Checklist:
 
 - confirme `APP_URL` correto no `.env`
 - confirme que `public/build` foi enviado ao servidor
+- se o deploy for por Git, confirme que `public/build` nao esta ignorado pelo `.gitignore`
 - confirme que o document root aponta para `public`
 
 ### Slug capturando rota indevida
