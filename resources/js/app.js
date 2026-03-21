@@ -100,6 +100,7 @@ function setupLinksPage() {
     const list = document.querySelector('[data-links-list]');
     const emptyState = document.querySelector('[data-links-empty]');
     const detailModal = document.querySelector('[data-detail-modal]');
+    const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
     const detailTitle = document.querySelector('[data-detail-title]');
     const detailUrl = document.querySelector('[data-detail-url]');
     const detailDestination = document.querySelector('[data-detail-destination]');
@@ -120,28 +121,17 @@ function setupLinksPage() {
 
         links.forEach((item) => {
             const article = document.createElement('article');
-            article.className = 'card glass-card border-0 shadow-sm';
+            article.className = 'link-item';
             article.innerHTML = `
-                <div class="card-body p-3 p-lg-4">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-lg-4">
-                            <div class="min-w-0">
-                                <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short d-inline-block text-decoration-none fw-semibold">${item.shortUrl}</a>
-                                <p class="small text-body-secondary mb-0 mt-2">Criado em ${formatDate(item.createdAt)}</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <p class="link-target text-body-secondary mb-0" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 72)}</p>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="d-flex flex-wrap justify-content-lg-end gap-2">
-                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
-                            </div>
-                        </div>
+                    <div class="link-item-info">
+                        <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
+                        <span class="link-target" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 60)}</span>
                     </div>
-                </div>
-			`;
+                    <div class="link-actions">
+                        <button type="button" class="btn-action" data-action="detail" data-slug="${item.slug}">Ver QR</button>
+                        <button type="button" class="btn-action" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                    </div>
+                `;
             list.appendChild(article);
         });
     }
@@ -174,6 +164,7 @@ function setupLinksPage() {
             }, 'Nao foi possivel gerar o link curto.');
 
             result.hidden = false;
+            if (qrPlaceholder) qrPlaceholder.hidden = true;
             resultLink.href = payload.shortUrl;
             resultLink.textContent = payload.shortUrl;
             resultQr.src = payload.qrCodeDataUrl;
@@ -266,6 +257,7 @@ function setupPixPage() {
     const result = document.querySelector('[data-pix-result]');
     const copyButton = document.querySelector('[data-pix-copy]');
     const copyFeedback = document.querySelector('[data-pix-copy-feedback]');
+    const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
 
     function syncPlaceholder() {
         key.placeholder = KEY_PLACEHOLDERS[keyType.value] || 'Informe sua chave Pix';
@@ -297,6 +289,7 @@ function setupPixPage() {
             payloadOutput.value = payload.payload;
             qrImage.src = payload.qrCodeDataUrl;
             result.hidden = false;
+            if (qrPlaceholder) qrPlaceholder.hidden = true;
             setFeedback(feedback, payload.message || 'Payload Pix gerado com sucesso.');
         } catch (error) {
             setFeedback(feedback, error.message, true);
