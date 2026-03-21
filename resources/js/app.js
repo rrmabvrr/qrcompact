@@ -1,3 +1,5 @@
+import * as bootstrap from 'bootstrap';
+
 const body = document.body;
 const page = body.dataset.page;
 
@@ -81,6 +83,7 @@ function formatDate(isoString) {
 function setFeedback(element, message, isError = false) {
     element.textContent = message;
     element.classList.toggle('is-error', isError);
+    element.classList.toggle('text-danger', isError);
 }
 
 function setupLinksPage() {
@@ -117,19 +120,21 @@ function setupLinksPage() {
 
         links.forEach((item) => {
             const article = document.createElement('article');
-            article.className = 'link-card';
+            article.className = 'card glass-card border-0 shadow-sm';
             article.innerHTML = `
-				<div class="link-card__header">
-					<div>
-						<a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-card__short">${item.shortUrl}</a>
-						<p class="link-card__meta">Criado em ${formatDate(item.createdAt)}</p>
-					</div>
-					<div class="link-card__actions">
-						<button type="button" class="button button--ghost" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-						<button type="button" class="button button--ghost" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
-					</div>
-				</div>
-				<p class="link-card__target" title="${item.originalUrl}">${compactUrlText(item.originalUrl)}</p>
+                <div class="card-body p-3 p-lg-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+                        <div class="min-w-0">
+                            <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short d-inline-block text-decoration-none fw-semibold">${item.shortUrl}</a>
+                            <p class="small text-body-secondary mb-0 mt-2">Criado em ${formatDate(item.createdAt)}</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="detail" data-slug="${item.slug}">Ver QR</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                        </div>
+                    </div>
+                    <p class="link-target text-body-secondary mb-0 mt-3" title="${item.originalUrl}">${compactUrlText(item.originalUrl)}</p>
+                </div>
 			`;
             list.appendChild(article);
         });
@@ -145,13 +150,11 @@ function setupLinksPage() {
     }
 
     function openModal(modal) {
-        modal.hidden = false;
-        document.body.classList.add('has-modal');
+        bootstrap.Modal.getOrCreateInstance(modal).show();
     }
 
     function closeModal(modal) {
-        modal.hidden = true;
-        document.body.classList.remove('has-modal');
+        bootstrap.Modal.getOrCreateInstance(modal).hide();
     }
 
     createForm.addEventListener('submit', async (event) => {
@@ -234,25 +237,10 @@ function setupLinksPage() {
         }
     });
 
-    document.querySelectorAll('[data-close-modal]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            closeModal(modal);
-        });
-    });
-
-    document.querySelectorAll('.modal').forEach((modal) => {
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal(modal);
-            }
-        });
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            document.querySelectorAll('.modal:not([hidden])').forEach((modal) => closeModal(modal));
-        }
+    editModal.addEventListener('hidden.bs.modal', () => {
+        editingSlug = null;
+        editForm.reset();
+        setFeedback(editFeedback, '');
     });
 
     loadLinks();
