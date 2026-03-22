@@ -12,6 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -20,17 +21,7 @@
     <header class="app-header">
         <div class="inner">
             <a href="{{ route('links.index') }}" class="brand">
-                <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                    <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none" />
-                    <rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none" />
-                    <rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none" />
-                    <path d="M14 14h2v2h-2zM18 14h3v2h-3zM14 18h2v3h-2zM18 18h3v3h-3z" fill="currentColor"
-                        stroke="none" />
-                </svg>
+                <i class="bi bi-qr-code brand-icon" aria-hidden="true"></i>
                 <span class="brand-name-wrap">
                     <span>QRCompact</span>
                     <span class="brand-beta">Beta</span>

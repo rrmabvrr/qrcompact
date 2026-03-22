@@ -73,6 +73,11 @@ body {
 .brand-icon {
     width: 2.1rem;
     height: 2.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    line-height: 1;
     color: #fff;
     flex-shrink: 0;
 }
@@ -232,9 +237,9 @@ body {
     box-shadow: 0 2px 8px rgba(232, 69, 106, 0.28);
 }
 
-.type-toggle-btn svg {
-    width: 0.9rem;
-    height: 0.9rem;
+.type-toggle-btn i {
+    font-size: 0.92rem;
+    line-height: 1;
 }
 
 /* ── Content type grid ───────────────────────── */
@@ -300,9 +305,9 @@ body {
     flex-shrink: 0;
 }
 
-.type-card-icon svg {
-    width: 1rem;
-    height: 1rem;
+.type-card-icon i {
+    font-size: 1rem;
+    line-height: 1;
 }
 
 /* ── Content / form section ──────────────────── */
@@ -420,9 +425,9 @@ body {
     color: #fff;
 }
 
-.btn-generate svg {
-    width: 1.1rem;
-    height: 1.1rem;
+.btn-generate i {
+    font-size: 1.1rem;
+    line-height: 1;
 }
 
 /* ── Link list items ─────────────────────────── */
