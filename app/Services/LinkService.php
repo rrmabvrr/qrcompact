@@ -62,6 +62,11 @@ class LinkService
         return route('links.redirect', ['slug' => $link->slug]);
     }
 
+    public function incrementClickCount(Link $link): void
+    {
+        $link->increment('click_count');
+    }
+
     public function serialize(Link $link): array
     {
         return [
@@ -69,6 +74,7 @@ class LinkService
             'slug' => $link->slug,
             'originalUrl' => $link->original_url,
             'shortUrl' => $this->shortUrl($link),
+            'clickCount' => (int) $link->click_count,
             'createdAt' => optional($link->created_at)?->toIso8601String(),
             'updatedAt' => optional($link->updated_at)?->toIso8601String(),
         ];

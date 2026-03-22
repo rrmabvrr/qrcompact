@@ -1,25 +1,23 @@
-@extends('layouts.app', ['title' => 'Links Curtos', 'page' => 'links'])
+@extends('layouts.app', ['title' => 'WhatsApp', 'page' => 'whatsapp'])
 
 @section('form-content')
-<form id="links-form" data-links-form>
-    <div class="mb-2">
-        <label for="short-url" class="form-label">URL</label>
-        <input id="short-url" class="form-control" type="url" name="url" placeholder="http://..." required
-            data-links-url>
-    </div>
+<form id="whatsapp-form" data-links-form>
+    <input type="hidden" name="link_mode" value="whatsapp" data-link-mode checked>
 
-    <div class="mb-2" data-whatsapp-fields hidden>
+    <div class="mb-2" data-whatsapp-fields>
         <label for="wa-phone" class="form-label">Digite seu numero de telefone WhatsApp</label>
         <input id="wa-phone" class="form-control" type="text" inputmode="numeric" placeholder="5599999999999" value="55"
-            data-wa-phone>
+            required data-wa-phone>
 
         <label for="wa-message" class="form-label mt-2">Mensagem personalizada</label>
         <textarea id="wa-message" class="form-control" rows="3" placeholder="Ola! Vim pelo QR Code."
             data-wa-message></textarea>
+
         <div class="form-text">Formato do numero: codigo do pais + DDD + numero. Exemplo: 5599999999999</div>
     </div>
 
     <p class="feedback mt-2" data-links-feedback aria-live="polite"></p>
+    
 </form>
 @endsection
 
@@ -38,8 +36,8 @@
 </div>
 @endsection
 
-@section('generate-form-id', 'links-form')
-@section('generate-label', 'Gerar QRCode')
+@section('generate-form-id', 'whatsapp-form')
+@section('generate-label', 'Gerar QRCode WhatsApp')
 
 @section('content')
 
@@ -95,7 +93,7 @@
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
                     <h3 class="h5 mb-1">Editar slug <span data-edit-slug></span></h3>
-                    <p class="text-body-secondary small mb-0">Apenas o destino do redirecionamento será alterado.</p>
+                    <p class="text-body-secondary small mb-0">Apenas o destino do redirecionamento sera alterado.</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>

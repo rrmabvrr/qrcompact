@@ -15,4 +15,9 @@ class PageController extends Controller
     {
         return view('pix.index');
     }
+
+    public function whatsapp(): View
+    {
+        return view('whatsapp.index');
+    }
 }

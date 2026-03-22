@@ -12,5 +12,6 @@ class Link extends Model
     protected $fillable = [
         'slug',
         'original_url',
+        'click_count',
     ];
 }

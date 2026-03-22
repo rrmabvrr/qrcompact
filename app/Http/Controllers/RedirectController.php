@@ -18,6 +18,8 @@ class RedirectController extends Controller
             abort(404, 'Link curto nao encontrado');
         }
 
+        $this->linkService->incrementClickCount($link);
+
         return redirect()->away($link->original_url, 302);
     }
 }

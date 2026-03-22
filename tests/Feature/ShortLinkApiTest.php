@@ -33,6 +33,11 @@ class ShortLinkApiTest extends TestCase
 
         $this->get('/' . $link->slug)
             ->assertRedirect('https://example.com/destino');
+
+        $this->assertDatabaseHas('links', [
+            'slug' => 'Ab12Cd',
+            'click_count' => 1,
+        ]);
     }
 
     public function test_it_updates_a_link_destination(): void

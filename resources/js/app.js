@@ -82,8 +82,14 @@ function formatDate(isoString) {
 
 function setFeedback(element, message, isError = false) {
     element.textContent = message;
+    element.classList.remove('is-success');
     element.classList.toggle('is-error', isError);
     element.classList.toggle('text-danger', isError);
+}
+
+function setSuccessFeedback(element, message) {
+    setFeedback(element, message, false);
+    element.classList.add('is-success');
 }
 
 function setupLinksPage() {
@@ -112,20 +118,86 @@ function setupLinksPage() {
     const editSlug = document.querySelector('[data-edit-slug]');
     const editUrl = document.querySelector('[data-edit-url]');
     const editFeedback = document.querySelector('[data-edit-feedback]');
+    const modeInputs = document.querySelectorAll('[data-link-mode]');
+    const whatsappFields = document.querySelector('[data-whatsapp-fields]');
+    const waPhoneInput = document.querySelector('[data-wa-phone]');
+    const waMessageInput = document.querySelector('[data-wa-message]');
 
     let editingSlug = null;
+
+    function getSelectedMode() {
+        if (modeInputs.length === 0) {
+            return body.dataset.page === 'whatsapp' ? 'whatsapp' : 'url';
+        }
+
+        const selected = Array.from(modeInputs).find((input) => input.checked);
+        return selected ? selected.value : 'url';
+    }
+
+    function syncLinkModeUI() {
+        const isWhatsAppMode = getSelectedMode() === 'whatsapp';
+        if (whatsappFields) {
+            whatsappFields.hidden = !isWhatsAppMode;
+        }
+
+        const urlFieldWrapper = urlInput ? urlInput.closest('.mb-2') : null;
+        if (urlFieldWrapper) {
+            urlFieldWrapper.hidden = isWhatsAppMode;
+        }
+
+        if (urlInput) {
+            urlInput.required = !isWhatsAppMode;
+        }
+        if (waPhoneInput) waPhoneInput.required = isWhatsAppMode;
+        if (waMessageInput) waMessageInput.required = false;
+    }
+
+    function buildWhatsAppUrl() {
+        const rawPhone = waPhoneInput.value.trim();
+        const message = waMessageInput.value.trim();
+        const digits = rawPhone.replace(/\D/g, '');
+
+        if (!digits || digits.length < 12) {
+            throw new Error('Informe um numero WhatsApp valido com codigo do pais + DDD + numero.');
+        }
+
+        const query = message ? `?text=${encodeURIComponent(message)}` : '';
+
+        return `https://wa.me/${digits}${query}`;
+    }
+
+    function ensureWhatsAppPrefix() {
+        if (waPhoneInput && waPhoneInput.value.trim() === '') {
+            waPhoneInput.value = '55';
+        }
+    }
 
     function renderLinks(links) {
         list.innerHTML = '';
         emptyState.hidden = links.length > 0;
 
+        const maxClicks = links.reduce((highest, current) => {
+            const clicks = Number(current.clickCount ?? 0);
+            return clicks > highest ? clicks : highest;
+        }, 0);
+
         links.forEach((item) => {
+            const clicks = Number(item.clickCount ?? 0);
+            const isMostAccessed = maxClicks > 0 && clicks === maxClicks;
+            const badge = isMostAccessed
+                ? '<span class="link-badge-top">Mais acessado</span>'
+                : '';
+
             const article = document.createElement('article');
             article.className = 'link-item';
             article.innerHTML = `
                     <div class="link-item-info">
-                        <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
+                        <div class="link-head">
+                            <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
+                            ${badge}
+                        </div>
                         <span class="link-target" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 60)}</span>
+                        <span class="link-target">Cliques: ${clicks}</span>
                     </div>
                     <div class="link-actions">
                         <button type="button" class="btn-action" data-action="detail" data-slug="${item.slug}">Ver QR</button>
@@ -158,9 +230,14 @@ function setupLinksPage() {
         setFeedback(feedback, 'Gerando link curto...');
 
         try {
+            const mode = getSelectedMode();
+            const urlToShorten = mode === 'whatsapp'
+                ? buildWhatsAppUrl()
+                : (urlInput ? urlInput.value.trim() : '');
+
             const payload = await requestJson('/api/shorten', {
                 method: 'POST',
-                body: JSON.stringify({ url: urlInput.value.trim() }),
+                body: JSON.stringify({ url: urlToShorten }),
             }, 'Nao foi possivel gerar o link curto.');
 
             result.hidden = false;
@@ -169,13 +246,25 @@ function setupLinksPage() {
             resultLink.textContent = payload.shortUrl;
             resultQr.src = payload.qrCodeDataUrl;
             resultQr.alt = `QR Code do link ${payload.slug}`;
-            urlInput.value = '';
-            setFeedback(feedback, payload.message || 'Link curto criado com sucesso.');
+            if (mode === 'whatsapp') {
+                if (waPhoneInput) waPhoneInput.value = '55';
+                if (waMessageInput) waMessageInput.value = '';
+            } else if (urlInput) {
+                urlInput.value = '';
+            }
+            setSuccessFeedback(feedback, payload.message || 'Link curto criado com sucesso.');
             await loadLinks();
         } catch (error) {
             setFeedback(feedback, error.message, true);
         }
     });
+
+    modeInputs.forEach((input) => {
+        input.addEventListener('change', syncLinkModeUI);
+    });
+
+    ensureWhatsAppPrefix();
+    syncLinkModeUI();
 
     list.addEventListener('click', async (event) => {
         const button = event.target.closest('button[data-action]');
@@ -227,7 +316,7 @@ function setupLinksPage() {
             }, 'Nao foi possivel atualizar o link.');
 
             closeModal(editModal);
-            setFeedback(feedback, payload.message || 'Link atualizado com sucesso.');
+            setSuccessFeedback(feedback, payload.message || 'Link atualizado com sucesso.');
             await loadLinks();
         } catch (error) {
             setFeedback(editFeedback, error.message, true);
@@ -290,7 +379,7 @@ function setupPixPage() {
             qrImage.src = payload.qrCodeDataUrl;
             result.hidden = false;
             if (qrPlaceholder) qrPlaceholder.hidden = true;
-            setFeedback(feedback, payload.message || 'Payload Pix gerado com sucesso.');
+            setSuccessFeedback(feedback, payload.message || 'Payload Pix gerado com sucesso.');
         } catch (error) {
             setFeedback(feedback, error.message, true);
         }
@@ -317,6 +406,10 @@ function setupPixPage() {
 }
 
 if (page === 'links') {
+    setupLinksPage();
+}
+
+if (page === 'whatsapp') {
     setupLinksPage();
 }
 
