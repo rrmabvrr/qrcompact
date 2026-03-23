@@ -37,8 +37,15 @@
             </nav>
 
             <div class="header-actions">
-                <a href="#" class="btn-header-ghost">Entrar</a>
-                <a href="#" class="btn-premium">Conheça a versão premium!</a>
+                @auth
+                    <span class="btn-header-ghost">{{ auth()->user()->email }}</span>
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn-premium">Sair</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-header-ghost">Entrar</a>
+                @endauth
             </div>
         </div>
     </header>
