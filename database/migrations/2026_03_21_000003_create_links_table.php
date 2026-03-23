@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug', 6)->unique();
             $table->text('original_url');
+            $table->unsignedBigInteger('click_count')->default(0);
             $table->timestamps();
         });
     }

@@ -2,15 +2,19 @@
 
 @section('form-content')
 <form id="pix-form" data-pix-form class="row g-3">
+
     <div class="col-md-4">
         <label for="pix-key-type" class="form-label">Tipo de chave</label>
-        <select id="pix-key-type" class="form-select" data-pix-key-type>
-            <option value="phone">Telefone</option>
-            <option value="cpf">CPF</option>
-            <option value="cnpj">CNPJ</option>
-            <option value="email">Email</option>
-            <option value="random">Aleatória</option>
-        </select>
+        <div class="position-relative">
+            <select id="pix-key-type" class="form-select pe-5" style="appearance:none;" data-pix-key-type>
+                <option value="phone">Telefone</option>
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="email">Email</option>
+                <option value="random">Aleatória</option>
+            </select>
+            <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y pe-none me-3" aria-hidden="true"></i>
+        </div>
     </div>
 
     <div class="col-md-8">
@@ -51,6 +55,21 @@
 @section('qr-result-content')
 <div class="qr-result-area" data-pix-result hidden>
     <img src="" alt="QR Code Pix" data-pix-qr>
+
+    <dl class="pix-summary w-100">
+        <div class="pix-summary-row">
+            <dt>Chave Pix</dt>
+            <dd data-pix-summary-key>—</dd>
+        </div>
+        <div class="pix-summary-row">
+            <dt>Beneficiário</dt>
+            <dd data-pix-summary-name>—</dd>
+        </div>
+        <div class="pix-summary-row">
+            <dt>Cod. da Transação</dt>
+            <dd data-pix-summary-txid>—</dd>
+        </div>
+    </dl>
 
     <div class="w-100">
         <label for="pix-payload" class="form-label">Pix copia e cola</label>

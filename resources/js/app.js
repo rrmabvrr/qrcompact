@@ -4,7 +4,7 @@ const body = document.body;
 const page = body.dataset.page;
 
 const KEY_PLACEHOLDERS = {
-    phone: '(11) 99999-9999',
+    phone: '(95) 99999-9999',
     cpf: '000.000.000-00',
     cnpj: '00.000.000/0000-00',
     email: 'voce@exemplo.com',
@@ -347,6 +347,9 @@ function setupPixPage() {
     const copyButton = document.querySelector('[data-pix-copy]');
     const copyFeedback = document.querySelector('[data-pix-copy-feedback]');
     const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
+    const summaryKey = document.querySelector('[data-pix-summary-key]');
+    const summaryName = document.querySelector('[data-pix-summary-name]');
+    const summaryTxid = document.querySelector('[data-pix-summary-txid]');
 
     function syncPlaceholder() {
         key.placeholder = KEY_PLACEHOLDERS[keyType.value] || 'Informe sua chave Pix';
@@ -377,6 +380,9 @@ function setupPixPage() {
 
             payloadOutput.value = payload.payload;
             qrImage.src = payload.qrCodeDataUrl;
+            if (summaryKey) summaryKey.textContent = payloadBody.key || '—';
+            if (summaryName) summaryName.textContent = payloadBody.name || '—';
+            if (summaryTxid) summaryTxid.textContent = payloadBody.txid || '***';
             result.hidden = false;
             if (qrPlaceholder) qrPlaceholder.hidden = true;
             setSuccessFeedback(feedback, payload.message || 'Payload Pix gerado com sucesso.');
