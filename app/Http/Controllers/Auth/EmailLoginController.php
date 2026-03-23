@@ -31,10 +31,11 @@ class EmailLoginController extends Controller
 
         $email = mb_strtolower(trim($validated['email']));
         $user = User::query()->where('email', $email)->first();
+        $isFirstAccess = false;
 
-        // Avoid user enumeration by keeping the same success message.
         if (! $user) {
-            return back()->with('status', 'Se o email estiver cadastrado, enviaremos um codigo de acesso.');
+            $isFirstAccess = true;
+            $user = User::create(['email' => $email]);
         }
 
         $code = (string) random_int(100000, 999999);
@@ -49,11 +50,16 @@ class EmailLoginController extends Controller
             'updated_at' => now(),
         ]);
 
-        Mail::to($email)->send(new LoginCodeMail($code, self::CODE_EXPIRATION_MINUTES));
+        Mail::to($email)->send(new LoginCodeMail($code, self::CODE_EXPIRATION_MINUTES, $isFirstAccess));
+
+        $statusMessage = $isFirstAccess
+            ? 'Primeiro acesso! Enviamos um codigo de verificacao para seu email.'
+            : 'Codigo de acesso enviado para seu email.';
 
         return redirect()
             ->route('login.verify.form', ['email' => $email])
-            ->with('status', 'Codigo enviado para seu email.');
+            ->with('status', $statusMessage)
+            ->with('is_first_access', $isFirstAccess);
     }
 
     public function showVerifyForm(Request $request): View
@@ -118,6 +124,11 @@ class EmailLoginController extends Controller
 
             return redirect()->route('login')
                 ->withErrors(['email' => 'Nao foi possivel autenticar este email.']);
+        }
+
+        // Primeiro acesso: ativa a conta marcando o email como verificado.
+        if (! $user->email_verified_at) {
+            $user->update(['email_verified_at' => now()]);
         }
 
         DB::table('email_login_codes')->where('email', $email)->delete();

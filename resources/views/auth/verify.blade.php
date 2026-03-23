@@ -1,8 +1,13 @@
 @extends('layouts.guest', ['title' => 'Validar codigo - QRCompact'])
 
 @section('content')
-    <h1 class="guest-title">Digite o codigo</h1>
-    <p class="guest-subtitle">Enviamos um codigo de 6 digitos para <strong>{{ $email }}</strong>.</p>
+    @if (session('is_first_access'))
+        <h1 class="guest-title">Confirme seu email</h1>
+        <p class="guest-subtitle">Enviamos um codigo de ativacao para <strong>{{ $email }}</strong>. Insira abaixo para criar sua conta.</p>
+    @else
+        <h1 class="guest-title">Digite o codigo</h1>
+        <p class="guest-subtitle">Enviamos um codigo de 6 digitos para <strong>{{ $email }}</strong>.</p>
+    @endif
 
     @if (session('status'))
         <div class="alert alert-info" role="status">{{ session('status') }}</div>

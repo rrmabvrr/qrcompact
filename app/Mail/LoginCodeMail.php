@@ -15,13 +15,16 @@ class LoginCodeMail extends Mailable
     public function __construct(
         public string $code,
         public int $expiresInMinutes,
+        public bool $isFirstAccess = false,
     ) {}
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Seu codigo de acesso - QRCompact',
-        );
+        $subject = $this->isFirstAccess
+            ? 'Confirme seu email para acessar o QRCompact'
+            : 'Seu codigo de acesso - QRCompact';
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content
@@ -31,6 +34,7 @@ class LoginCodeMail extends Mailable
             with: [
                 'code' => $this->code,
                 'expiresInMinutes' => $this->expiresInMinutes,
+                'isFirstAccess' => $this->isFirstAccess,
             ],
         );
     }
