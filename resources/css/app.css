@@ -89,6 +89,51 @@ body {
     font-size: 0.94rem;
 }
 
+.btn-outline-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: transparent;
+    color: var(--app-navy);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1.5px solid var(--app-line);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    letter-spacing: 0.01em;
+}
+
+.btn-outline-login:hover {
+    border-color: var(--app-navy);
+    background: rgba(30, 43, 60, 0.04);
+}
+
+.login-or {
+    text-align: center;
+    color: var(--app-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.btn-link-subtle {
+    background: none;
+    border: none;
+    color: var(--app-accent);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+}
+
+.btn-link-subtle:hover {
+    text-decoration: underline;
+}
+
 /* ── Header ──────────────────────────────────── */
 
 .app-header {

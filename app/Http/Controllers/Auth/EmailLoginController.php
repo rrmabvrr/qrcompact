@@ -23,6 +23,29 @@ class EmailLoginController extends Controller
         return view('auth.login');
     }
 
+    public function loginWithPassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $credentials = [
+            'email' => mb_strtolower(trim($validated['email'])),
+            'password' => $validated['password'],
+        ];
+
+        if (Auth::attempt($credentials, false)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('links.index'));
+        }
+
+        return back()
+            ->withInput(['email' => $credentials['email'], '_panel' => 'password'])
+            ->withErrors(['email' => 'Email ou senha incorretos.']);
+    }
+
     public function sendCode(Request $request): RedirectResponse
     {
         $validated = $request->validate([
