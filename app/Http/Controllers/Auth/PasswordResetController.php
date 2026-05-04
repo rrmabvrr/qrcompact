@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\LoginCodeMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -23,9 +25,34 @@ class PasswordResetController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $email = mb_strtolower(trim($request->email));
+
+        // Se o e-mail não estiver cadastrado, cria a conta e envia código de acesso
+        $user = User::query()->where('email', $email)->first();
+
+        if (! $user) {
+            User::create(['email' => $email]);
+
+            $code = (string) random_int(100000, 999999);
+
+            DB::table('email_login_codes')->where('email', $email)->delete();
+            DB::table('email_login_codes')->insert([
+                'email'      => $email,
+                'code_hash'  => Hash::make($code),
+                'attempts'   => 0,
+                'expires_at' => now()->addMinutes(10),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            Mail::to($email)->send(new LoginCodeMail($code, 10, true));
+
+            return redirect()
+                ->route('login.verify.form', ['email' => $email])
+                ->with('status', 'Email nao cadastrado. Criamos sua conta e enviamos um codigo de acesso para ' . $email . '.');
+        }
+
+        $status = Password::sendResetLink(['email' => $email]);
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
