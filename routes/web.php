@@ -3,6 +3,7 @@
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\Auth\EmailLoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -11,6 +12,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login/senha', [EmailLoginController::class, 'loginWithPassword'])->name('login.password');
     Route::get('/login/verificar', [EmailLoginController::class, 'showVerifyForm'])->name('login.verify.form');
     Route::post('/login/verificar', [EmailLoginController::class, 'verifyCode'])->name('login.verify');
+
+    // Recuperação de Senha
+    Route::get('/esqueci-senha', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
+    Route::post('/esqueci-senha', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/redefinir-senha/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/redefinir-senha', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 
 Route::middleware('auth')->group(function () {

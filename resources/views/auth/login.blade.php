@@ -40,6 +40,9 @@
                     class="form-control"
                     placeholder=""
                     required>
+                <div class="text-end mt-1">
+                    <a href="{{ route('password.request') }}" class="small text-decoration-none">Esqueci minha senha</a>
+                </div>
             </div>
 
             <div class="col-12">
