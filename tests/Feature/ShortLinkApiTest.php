@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Link;
+use App\Services\SafeBrowsingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class ShortLinkApiTest extends TestCase
@@ -85,5 +87,25 @@ class ShortLinkApiTest extends TestCase
         $this->assertStringContainsString('0014BR.GOV.BCB.PIX', $payload);
         $this->assertStringContainsString('540519.90', $payload);
         $this->assertMatchesRegularExpression('/6304[0-9A-F]{4}$/', $payload);
+    }
+
+    public function test_it_blocks_dangerous_urls_when_shortening(): void
+    {
+        $this->mock(SafeBrowsingService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('isSafe')
+                ->once()
+                ->with('https://malicious.example/phishing')
+                ->andReturn(false);
+        });
+
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://malicious.example/phishing',
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['url']);
+
+        $this->assertDatabaseCount('links', 0);
     }
 }

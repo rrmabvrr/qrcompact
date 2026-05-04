@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SafeUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateLinkRequest extends FormRequest
@@ -14,7 +15,7 @@ class UpdateLinkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'url' => ['required', 'string', 'url', 'regex:/^https?:\/\//i'],
+            'url' => ['required', 'string', 'url', 'regex:/^https?:\/\//i', new SafeUrl],
         ];
     }
 

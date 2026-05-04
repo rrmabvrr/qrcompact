@@ -7,6 +7,7 @@ use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Services\LinkService;
 use App\Services\QrCodeService;
+use App\Services\SafeBrowsingService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -15,6 +16,7 @@ class LinkController extends Controller
     public function __construct(
         private readonly LinkService $linkService,
         private readonly QrCodeService $qrCodeService,
+        private readonly SafeBrowsingService $safeBrowsingService,
     ) {}
 
     public function index(): JsonResponse
@@ -28,7 +30,14 @@ class LinkController extends Controller
 
     public function store(StoreLinkRequest $request): JsonResponse
     {
-        $link = $this->linkService->create($request->validated('url'));
+        $url = $request->validated('url');
+        $safeBrowsingError = $this->validateSafeBrowsing($url);
+
+        if ($safeBrowsingError instanceof JsonResponse) {
+            return $safeBrowsingError;
+        }
+
+        $link = $this->linkService->create($url);
         $shortUrl = $this->linkService->shortUrl($link);
 
         return response()->json([
@@ -58,8 +67,15 @@ class LinkController extends Controller
 
     public function update(UpdateLinkRequest $request, string $slug): JsonResponse
     {
+        $url = $request->validated('url');
+        $safeBrowsingError = $this->validateSafeBrowsing($url);
+
+        if ($safeBrowsingError instanceof JsonResponse) {
+            return $safeBrowsingError;
+        }
+
         try {
-            $link = $this->linkService->update($slug, $request->validated('url'));
+            $link = $this->linkService->update($slug, $url);
         } catch (NotFoundHttpException $exception) {
             return response()->json([
                 'message' => 'Link curto nao encontrado',
@@ -70,5 +86,19 @@ class LinkController extends Controller
             ...$this->linkService->serialize($link),
             'message' => 'Link atualizado com sucesso.',
         ]);
+    }
+
+    private function validateSafeBrowsing(string $url): ?JsonResponse
+    {
+        if ($this->safeBrowsingService->isSafe($url)) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => 'A URL informada foi classificada como perigosa.',
+            'errors' => [
+                'url' => ['A URL informada foi classificada como perigosa e nao pode ser encurtada.'],
+            ],
+        ], 422);
     }
 }

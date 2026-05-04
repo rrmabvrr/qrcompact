@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
@@ -16,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        RateLimiter::for('shorten', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
         Mail::extend('smtp', function (array $config) {
             $isTls = in_array($config['scheme'] ?? '', ['smtps', 'ssl'], true)
                 || (int) ($config['port'] ?? 465) === 465;
