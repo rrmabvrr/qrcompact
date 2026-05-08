@@ -9,9 +9,7 @@
     <meta name="description" content="QRCompact: encurtador de links, QR Code e Pix.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -32,24 +30,43 @@
                     Curtos</a>
                 <a href="{{ route('pix.index') }}" class="{{ ($page ?? '') === 'pix' ? 'nav-active' : '' }}">Gerar
                     Pix</a>
-                <a href="{{ route('whatsapp.index') }}"
-                    class="{{ ($page ?? '') === 'whatsapp' ? 'nav-active' : '' }}">WhatsApp</a>
+                <a href="{{ route('whatsapp.index') }}" class="{{ ($page ?? '') === 'whatsapp' ? 'nav-active' : '' }}">WhatsApp</a>
             </nav>
 
             <div class="header-actions">
                 @auth
-                    <span class="btn-header-ghost">{{ auth()->user()->email }}</span>
-                    <form action="{{ route('logout') }}" method="POST" class="m-0">
-                        @csrf
-                        <button type="submit" class="btn-premium">Sair</button>
-                    </form>
+                <details class="profile-dropdown">
+                    <summary class="btn-header-ghost profile-trigger" aria-label="Menu da conta">
+                        <span>{{ auth()->user()->email }}</span>
+                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                    </summary>
+                    <div class="profile-dropdown-menu">
+                        <a href="{{ route('profile.edit') }}" class="profile-dropdown-item">
+                            <i class="bi bi-person-gear" aria-hidden="true"></i>
+                            Configuracoes do perfil
+                        </a>
+                        <a href="{{ route('profile.password.edit') }}" class="profile-dropdown-item">
+                            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                            Mudanca de senha
+                        </a>
+                    </div>
+                </details>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn-premium">Sair</button>
+                </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-header-ghost">Entrar</a>
+                <a href="{{ route('login') }}" class="btn-header-ghost">Entrar</a>
                 @endauth
             </div>
         </div>
     </header>
 
+    @if (($layoutMode ?? 'default') === 'settings')
+    <main class="app-main app-main-settings">
+        @yield('content')
+    </main>
+    @else
     <main class="app-main">
         <div class="page-grid">
             <div>
@@ -68,32 +85,23 @@
                     </div>
 
                     <div class="content-type-grid">
-                        <a class="type-card {{ ($page ?? '') === 'links' ? 'active' : '' }}"
-                            href="{{ route('links.index') }}">
+                        <a class="type-card {{ ($page ?? '') === 'links' ? 'active' : '' }}" href="{{ route('links.index') }}">
                             <span class="type-card-icon"><i class="bi bi-link-45deg" aria-hidden="true"></i></span>
                             Link Único
                         </a>
-                        <a class="type-card {{ ($page ?? '') === 'pix' ? 'active' : '' }}"
-                            href="{{ route('pix.index') }}">
-                            <span class="type-card-icon"><i class="bi bi-currency-exchange"
-                                    aria-hidden="true"></i></span>
+                        <a class="type-card {{ ($page ?? '') === 'pix' ? 'active' : '' }}" href="{{ route('pix.index') }}">
+                            <span class="type-card-icon"><i class="bi bi-currency-exchange" aria-hidden="true"></i></span>
                             Pix
                         </a>
-                        <a class="type-card {{ ($page ?? '') === 'whatsapp' ? 'active' : '' }}"
-                            href="{{ route('whatsapp.index') }}">
+                        <a class="type-card {{ ($page ?? '') === 'whatsapp' ? 'active' : '' }}" href="{{ route('whatsapp.index') }}">
                             <span class="type-card-icon"><i class="bi bi-whatsapp" aria-hidden="true"></i></span>
                             WhatsApp
                         </a>
-                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-wifi"
-                                    aria-hidden="true"></i></span>Wi-Fi</span>
-                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-card-text"
-                                    aria-hidden="true"></i></span>Texto</span>
-                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-telephone"
-                                    aria-hidden="true"></i></span>Chamada</span>
-                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-envelope"
-                                    aria-hidden="true"></i></span>Email</span>
-                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-chat-left-text"
-                                    aria-hidden="true"></i></span>SMS</span>
+                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-wifi" aria-hidden="true"></i></span>Wi-Fi</span>
+                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-card-text" aria-hidden="true"></i></span>Texto</span>
+                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>Chamada</span>
+                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>Email</span>
+                        <span class="type-card"><span class="type-card-icon"><i class="bi bi-chat-left-text" aria-hidden="true"></i></span>SMS</span>
                     </div>
 
                     <h3 class="content-label">Conteúdo</h3>
@@ -135,6 +143,7 @@
 
         @yield('content')
     </main>
+    @endif
 
 </body>
 

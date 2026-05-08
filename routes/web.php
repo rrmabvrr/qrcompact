@@ -4,6 +4,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\Auth\EmailLoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -24,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [PageController::class, 'links'])->name('links.index');
     Route::get('/pix', [PageController::class, 'pix'])->name('pix.index');
     Route::get('/whatsapp', [PageController::class, 'whatsapp'])->name('whatsapp.index');
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/perfil/senha', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+    Route::put('/perfil/senha', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/logout', [EmailLoginController::class, 'logout'])->name('logout');
 });
 
