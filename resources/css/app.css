@@ -43,16 +43,12 @@ body {
 .guest-body {
     min-height: 100vh;
     background:
-        radial-gradient(
-            circle at 20% 0%,
+        radial-gradient(circle at 20% 0%,
             rgba(232, 69, 106, 0.12),
-            transparent 45%
-        ),
-        radial-gradient(
-            circle at 80% 100%,
+            transparent 45%),
+        radial-gradient(circle at 80% 100%,
             rgba(30, 43, 60, 0.18),
-            transparent 40%
-        ),
+            transparent 40%),
         var(--app-bg);
 }
 
@@ -283,11 +279,19 @@ body {
 
 .app-main-settings {
     max-width: 880px;
+    margin: 0 auto;
+}
+
+.app-main-settings .page-grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
 }
 
 .settings-wrap {
     display: grid;
     gap: 1rem;
+    width: min(100%, 680px);
+    margin: 0 auto;
 }
 
 .settings-card {

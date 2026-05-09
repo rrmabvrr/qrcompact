@@ -19,15 +19,21 @@
         <input type="hidden" name="_panel" value="password">
 
         <div class="col-12">
-            <label for="email-pass" class="form-label">Email</label>
-            <input id="email-pass" name="email" type="email" value="{{ old('email') }}" class="form-control" placeholder="email@exemplo.com" required autofocus>
+            <label for="email-pass" class="form-label">E-mail</label>
+            <input id="email-pass" name="email" type="email" value="{{ old('email') }}" class="form-control"
+                placeholder="email@exemplo.com" required autofocus>
         </div>
 
         <div class="col-12">
             <label for="password" class="form-label">Senha</label>
             <input id="password" name="password" type="password" class="form-control" placeholder="" required>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="toggle-login-password">
+                <label class="form-check-label" for="toggle-login-password">Mostrar senha</label>
+            </div>
             <div class="text-end mt-1">
-                <a href="{{ route('password.request') }}" class="small text-decoration-none">Esqueci minha senha / Recuperar conta</a>
+                <a href="{{ route('password.request') }}" class="small text-decoration-none">Esqueci minha senha /
+                    Recuperar conta</a>
             </div>
         </div>
 
@@ -47,7 +53,8 @@
 
 {{-- Painel: login por código (padrão) --}}
 <div id="panel-code" class="login-panel" @if(old('_panel')==='password' ) style="display:none" @endif>
-    <button type="button" class="btn btn-outline-secondary btn-outline-login w-100 mt-1" onclick="showLoginPanel('password')">
+    <button type="button" class="btn btn-outline-secondary btn-outline-login w-100 mt-1"
+        onclick="showLoginPanel('password')">
         <u class="me-2">***</u> Acessar com senha
     </button>
 
@@ -60,7 +67,8 @@
         <input type="hidden" name="_panel" value="code">
 
         <div class="col-12">
-            <input id="email" name="email" type="email" value="{{ old('email') }}" class="form-control" placeholder="email@exemplo.com" required autofocus>
+            <input id="email" name="email" type="email" value="{{ old('email') }}" class="form-control"
+                placeholder="email@exemplo.com" required autofocus>
         </div>
 
         <div class="col-12">
@@ -75,6 +83,14 @@
     function showLoginPanel(panel) {
         document.getElementById('panel-password').style.display = panel === 'password' ? '' : 'none';
         document.getElementById('panel-code').style.display = panel === 'code' ? '' : 'none';
+    }
+
+    const loginPasswordInput = document.getElementById('password');
+    const loginTogglePassword = document.getElementById('toggle-login-password');
+    if (loginPasswordInput && loginTogglePassword) {
+        loginTogglePassword.addEventListener('change', function() {
+            loginPasswordInput.type = this.checked ? 'text' : 'password';
+        });
     }
 
 </script>

@@ -21,8 +21,8 @@ class LoginCodeMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->isFirstAccess
-            ? 'Confirme seu email para acessar o QRCompact'
-            : 'Seu codigo de acesso - QRCompact';
+            ? 'Confirme seu e-mail para acessar o QRCompact'
+            : 'Seu código de acesso - QRCompact';
 
         return new Envelope(subject: $subject);
     }
