@@ -245,7 +245,11 @@ function setupLinksPage() {
             const fallbackWhatsappName = waPhoneInput
                 ? `WhatsApp ${waPhoneInput.value.trim()}`
                 : 'WhatsApp';
-            const name = typedName || (mode === 'whatsapp' ? fallbackWhatsappName : 'Link sem nome');
+            const name = mode === 'whatsapp' ? fallbackWhatsappName : typedName;
+
+            if (!name || name === '') {
+                throw new Error('Informe um nome para o link.');
+            }
 
             const payload = await requestJson('/api/shorten', {
                 method: 'POST',
