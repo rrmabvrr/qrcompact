@@ -5,8 +5,8 @@
     <div class="mb-2">
 
         <label for="link-name" class="form-label">Nome</label>
-        <input id="link-name" class="form-control" type="text" name="name" placeholder="Nome do link" required
-            data-links-name>
+        <input id="link-name" class="form-control" type="text" name="name"
+            placeholder="Nome do link (opcional - será gerado automaticamente se vazio)" data-links-name>
         <label for="link-url" class="form-label">URL</label>
         <input id="link-url" class="form-control" type="url" name="url" placeholder="http://..." required
             data-links-url>
@@ -55,7 +55,7 @@
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
                     <h3 class="h5 mb-1">Detalhes do link <span data-detail-title></span></h3>
-                    <p class="text-body-secondary small mb-0">QR Code gerado a partir do slug salvo.</p>
+                    <p class="text-body-secondary small mb-0">QR Code gerado a partir do nome salvo.</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -111,7 +111,7 @@
             <form class="modal-body px-4 pb-4" data-edit-form>
                 <div class="mb-3">
                     <label for="edit-name" class="form-label">Editar Nome do Link</label>
-                    <input id="edit-name" class="form-control" type="text" required data-edit-name>
+                    <input id="edit-name" class="form-control" type="text" data-edit-name>
                     <hr>
                     <label for="edit-url" class="form-label">Nova URL de destino</label>
                     <input id="edit-url" class="form-control" type="url" required data-edit-url>

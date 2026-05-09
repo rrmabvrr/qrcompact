@@ -30,7 +30,7 @@ class LinkController extends Controller
 
     public function store(StoreLinkRequest $request): JsonResponse
     {
-        $name = $request->validated('name');
+        $name = $request->validated('name') ?? '';
         $url = $request->validated('url');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 
@@ -68,7 +68,7 @@ class LinkController extends Controller
 
     public function update(UpdateLinkRequest $request, string $slug): JsonResponse
     {
-        $name = $request->validated('name');
+        $name = $request->validated('name') ?? '';
         $url = $request->validated('url');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 

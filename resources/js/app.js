@@ -247,10 +247,6 @@ function setupLinksPage() {
                 : 'WhatsApp';
             const name = mode === 'whatsapp' ? fallbackWhatsappName : typedName;
 
-            if (!name || name === '') {
-                throw new Error('Informe um nome para o link.');
-            }
-
             const payload = await requestJson('/api/shorten', {
                 method: 'POST',
                 body: JSON.stringify({ name, url: urlToShorten }),

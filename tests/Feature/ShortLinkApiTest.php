@@ -15,17 +15,34 @@ class ShortLinkApiTest extends TestCase
     public function test_it_shortens_a_valid_url(): void
     {
         $response = $this->postJson('/api/shorten', [
-            'name' => 'Pagina de produto',
             'url' => 'https://example.com/produto',
         ]);
 
         $response
             ->assertCreated()
-            ->assertJsonPath('name', 'Pagina de produto')
             ->assertJsonPath('originalUrl', 'https://example.com/produto')
-            ->assertJsonStructure(['slug', 'shortUrl', 'qrCodeDataUrl', 'message']);
+            ->assertJsonStructure(['name', 'slug', 'shortUrl', 'qrCodeDataUrl', 'message']);
 
         $this->assertDatabaseCount('links', 1);
+        $link = \App\Models\Link::first();
+        $this->assertEquals($link->slug, $link->name);
+    }
+
+    public function test_it_shortens_with_custom_name(): void
+    {
+        $response = $this->postJson('/api/shorten', [
+            'name' => 'Meu link especial',
+            'url' => 'https://example.com/outro',
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('name', 'Meu link especial')
+            ->assertJsonPath('originalUrl', 'https://example.com/outro');
+
+        $this->assertDatabaseCount('links', 1);
+        $link = \App\Models\Link::first();
+        $this->assertEquals('Meu link especial', $link->name);
     }
 
     public function test_it_redirects_to_the_original_url(): void
@@ -54,19 +71,16 @@ class ShortLinkApiTest extends TestCase
         ]);
 
         $response = $this->putJson('/api/links/Xy98Za', [
-            'name' => 'Link novo',
             'url' => 'https://example.com/novo',
         ]);
 
         $response
             ->assertOk()
-            ->assertJsonPath('name', 'Link novo')
             ->assertJsonPath('originalUrl', 'https://example.com/novo')
             ->assertJsonPath('message', 'Link atualizado com sucesso.');
 
         $this->assertDatabaseHas('links', [
             'slug' => 'Xy98Za',
-            'name' => 'Link novo',
             'original_url' => 'https://example.com/novo',
         ]);
     }
@@ -106,7 +120,6 @@ class ShortLinkApiTest extends TestCase
         });
 
         $response = $this->postJson('/api/shorten', [
-            'name' => 'Tentativa perigosa',
             'url' => 'https://malicious.example/phishing',
         ]);
 

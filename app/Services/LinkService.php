@@ -18,13 +18,14 @@ class LinkService
             ->get();
     }
 
-    public function create(string $name, string $originalUrl): Link
+    public function create(?string $name, string $originalUrl): Link
     {
         for ($attempt = 0; $attempt < 10; $attempt++) {
             try {
+                $slug = $this->generateSlug();
                 return Link::query()->create([
-                    'name' => $name,
-                    'slug' => $this->generateSlug(),
+                    'name' => $name ?: $slug,
+                    'slug' => $slug,
                     'original_url' => $originalUrl,
                 ]);
             } catch (QueryException $exception) {
@@ -37,11 +38,11 @@ class LinkService
         abort(500, 'Nao foi possivel gerar um slug unico apos 10 tentativas.');
     }
 
-    public function update(string $slug, string $name, string $originalUrl): Link
+    public function update(string $slug, ?string $name, string $originalUrl): Link
     {
         $link = $this->findBySlugOrFail($slug);
         $link->update([
-            'name' => $name,
+            'name' => $name ?: $slug,
             'original_url' => $originalUrl,
         ]);
 

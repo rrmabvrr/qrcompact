@@ -15,7 +15,7 @@ class UpdateLinkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:120'],
+            'name' => ['nullable', 'string', 'max:120'],
             'url' => ['required', 'string', 'url', 'regex:/^https?:\/\//i', new SafeUrl],
         ];
     }
@@ -23,7 +23,6 @@ class UpdateLinkRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Informe um nome para o link.',
             'name.string' => 'Informe um nome valido para o link.',
             'name.max' => 'O nome do link deve ter no maximo 120 caracteres.',
             'url.required' => 'Informe uma URL valida.',
