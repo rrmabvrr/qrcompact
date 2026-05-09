@@ -30,6 +30,7 @@ class LinkController extends Controller
 
     public function store(StoreLinkRequest $request): JsonResponse
     {
+        $name = $request->validated('name');
         $url = $request->validated('url');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 
@@ -37,7 +38,7 @@ class LinkController extends Controller
             return $safeBrowsingError;
         }
 
-        $link = $this->linkService->create($url);
+        $link = $this->linkService->create($name, $url);
         $shortUrl = $this->linkService->shortUrl($link);
 
         return response()->json([
@@ -67,6 +68,7 @@ class LinkController extends Controller
 
     public function update(UpdateLinkRequest $request, string $slug): JsonResponse
     {
+        $name = $request->validated('name');
         $url = $request->validated('url');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 
@@ -75,7 +77,7 @@ class LinkController extends Controller
         }
 
         try {
-            $link = $this->linkService->update($slug, $url);
+            $link = $this->linkService->update($slug, $name, $url);
         } catch (NotFoundHttpException $exception) {
             return response()->json([
                 'message' => 'Link curto nao encontrado',

@@ -15,11 +15,13 @@ class ShortLinkApiTest extends TestCase
     public function test_it_shortens_a_valid_url(): void
     {
         $response = $this->postJson('/api/shorten', [
+            'name' => 'Pagina de produto',
             'url' => 'https://example.com/produto',
         ]);
 
         $response
             ->assertCreated()
+            ->assertJsonPath('name', 'Pagina de produto')
             ->assertJsonPath('originalUrl', 'https://example.com/produto')
             ->assertJsonStructure(['slug', 'shortUrl', 'qrCodeDataUrl', 'message']);
 
@@ -29,6 +31,7 @@ class ShortLinkApiTest extends TestCase
     public function test_it_redirects_to_the_original_url(): void
     {
         $link = Link::query()->create([
+            'name' => 'Destino principal',
             'slug' => 'Ab12Cd',
             'original_url' => 'https://example.com/destino',
         ]);
@@ -45,21 +48,25 @@ class ShortLinkApiTest extends TestCase
     public function test_it_updates_a_link_destination(): void
     {
         Link::query()->create([
+            'name' => 'Link antigo',
             'slug' => 'Xy98Za',
             'original_url' => 'https://example.com/antigo',
         ]);
 
         $response = $this->putJson('/api/links/Xy98Za', [
+            'name' => 'Link novo',
             'url' => 'https://example.com/novo',
         ]);
 
         $response
             ->assertOk()
+            ->assertJsonPath('name', 'Link novo')
             ->assertJsonPath('originalUrl', 'https://example.com/novo')
             ->assertJsonPath('message', 'Link atualizado com sucesso.');
 
         $this->assertDatabaseHas('links', [
             'slug' => 'Xy98Za',
+            'name' => 'Link novo',
             'original_url' => 'https://example.com/novo',
         ]);
     }
@@ -99,6 +106,7 @@ class ShortLinkApiTest extends TestCase
         });
 
         $response = $this->postJson('/api/shorten', [
+            'name' => 'Tentativa perigosa',
             'url' => 'https://malicious.example/phishing',
         ]);
 

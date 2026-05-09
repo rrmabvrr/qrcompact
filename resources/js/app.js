@@ -98,9 +98,11 @@ function setupLinksPage() {
         return;
     }
 
+    const nameInput = document.querySelector('[data-links-name]');
     const urlInput = document.querySelector('[data-links-url]');
     const feedback = document.querySelector('[data-links-feedback]');
     const result = document.querySelector('[data-links-result]');
+    const resultName = document.querySelector('[data-result-name]');
     const resultLink = document.querySelector('[data-result-link]');
     const resultQr = document.querySelector('[data-result-qr]');
     const list = document.querySelector('[data-links-list]');
@@ -108,6 +110,7 @@ function setupLinksPage() {
     const detailModal = document.querySelector('[data-detail-modal]');
     const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
     const detailTitle = document.querySelector('[data-detail-title]');
+    const detailName = document.querySelector('[data-detail-name]');
     const detailUrl = document.querySelector('[data-detail-url]');
     const detailDestination = document.querySelector('[data-detail-destination]');
     const detailCreatedAt = document.querySelector('[data-detail-created]');
@@ -115,7 +118,8 @@ function setupLinksPage() {
     const detailQr = document.querySelector('[data-detail-qr]');
     const editModal = document.querySelector('[data-edit-modal]');
     const editForm = document.querySelector('[data-edit-form]');
-    const editSlug = document.querySelector('[data-edit-slug]');
+    const editNameTitle = document.querySelector('[data-edit-nome]') || document.querySelector('[data-edit-slug]');
+    const editName = document.querySelector('[data-edit-name]');
     const editUrl = document.querySelector('[data-edit-url]');
     const editFeedback = document.querySelector('[data-edit-feedback]');
     const modeInputs = document.querySelectorAll('[data-link-mode]');
@@ -124,6 +128,7 @@ function setupLinksPage() {
     const waMessageInput = document.querySelector('[data-wa-message]');
 
     let editingSlug = null;
+    let editingName = '';
 
     function getSelectedMode() {
         if (modeInputs.length === 0) {
@@ -184,6 +189,7 @@ function setupLinksPage() {
         links.forEach((item) => {
             const clicks = Number(item.clickCount ?? 0);
             const isMostAccessed = maxClicks > 0 && clicks === maxClicks;
+            const displayName = item.name || item.slug;
             const badge = isMostAccessed
                 ? '<span class="link-badge-top">Mais acessado</span>'
                 : '';
@@ -192,6 +198,7 @@ function setupLinksPage() {
             article.className = 'link-item';
             article.innerHTML = `
                     <div class="link-item-info">
+                        <span class="link-target">Nome: ${displayName}</span>
                         <div class="link-head">
                             <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
                             ${badge}
@@ -201,7 +208,7 @@ function setupLinksPage() {
                     </div>
                     <div class="link-actions">
                         <button type="button" class="btn-action" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-                        <button type="button" class="btn-action" data-action="edit" data-slug="${item.slug}" data-url="${item.originalUrl}">Editar</button>
+                        <button type="button" class="btn-action" data-action="edit" data-slug="${item.slug}" data-name="${displayName}" data-url="${item.originalUrl}">Editar</button>
                     </div>
                 `;
             list.appendChild(article);
@@ -231,21 +238,28 @@ function setupLinksPage() {
 
         try {
             const mode = getSelectedMode();
+            const typedName = nameInput ? nameInput.value.trim() : '';
             const urlToShorten = mode === 'whatsapp'
                 ? buildWhatsAppUrl()
                 : (urlInput ? urlInput.value.trim() : '');
+            const fallbackWhatsappName = waPhoneInput
+                ? `WhatsApp ${waPhoneInput.value.trim()}`
+                : 'WhatsApp';
+            const name = typedName || (mode === 'whatsapp' ? fallbackWhatsappName : 'Link sem nome');
 
             const payload = await requestJson('/api/shorten', {
                 method: 'POST',
-                body: JSON.stringify({ url: urlToShorten }),
+                body: JSON.stringify({ name, url: urlToShorten }),
             }, 'Nao foi possivel gerar o link curto.');
 
             result.hidden = false;
             if (qrPlaceholder) qrPlaceholder.hidden = true;
+            if (resultName) resultName.textContent = payload.name || name;
             resultLink.href = payload.shortUrl;
             resultLink.textContent = payload.shortUrl;
             resultQr.src = payload.qrCodeDataUrl;
             resultQr.alt = `QR Code do link ${payload.slug}`;
+            if (nameInput) nameInput.value = '';
             if (mode === 'whatsapp') {
                 if (waPhoneInput) waPhoneInput.value = '55';
                 if (waMessageInput) waMessageInput.value = '';
@@ -277,6 +291,7 @@ function setupLinksPage() {
             try {
                 const payload = await requestJson(`/api/links/${slug}`, {}, 'Nao foi possivel carregar os detalhes do link.');
                 detailTitle.textContent = payload.slug;
+                if (detailName) detailName.textContent = payload.name || '-';
                 detailUrl.href = payload.shortUrl;
                 detailUrl.textContent = payload.shortUrl;
                 detailDestination.textContent = payload.originalUrl;
@@ -292,12 +307,16 @@ function setupLinksPage() {
 
         if (action === 'edit') {
             editingSlug = slug;
-            editSlug.textContent = slug;
+            editingName = button.dataset.name || '';
+            if (editNameTitle) editNameTitle.textContent = button.dataset.name || slug;
+            if (editName) editName.value = button.dataset.name || '';
             editUrl.value = button.dataset.url || '';
             setFeedback(editFeedback, '');
             openModal(editModal);
-            editUrl.focus();
-            editUrl.select();
+            if (editName) {
+                editName.focus();
+                editName.select();
+            }
         }
     });
 
@@ -312,7 +331,10 @@ function setupLinksPage() {
         try {
             const payload = await requestJson(`/api/links/${editingSlug}`, {
                 method: 'PUT',
-                body: JSON.stringify({ url: editUrl.value.trim() }),
+                body: JSON.stringify({
+                    name: editName ? editName.value.trim() : editingName,
+                    url: editUrl.value.trim(),
+                }),
             }, 'Nao foi possivel atualizar o link.');
 
             closeModal(editModal);
@@ -325,6 +347,7 @@ function setupLinksPage() {
 
     editModal.addEventListener('hidden.bs.modal', () => {
         editingSlug = null;
+        editingName = '';
         editForm.reset();
         setFeedback(editFeedback, '');
     });
