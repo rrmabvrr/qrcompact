@@ -5,6 +5,10 @@
     <input type="hidden" name="link_mode" value="whatsapp" data-link-mode checked>
 
     <div class="mb-2" data-whatsapp-fields>
+        <label for="wa-link-name" class="form-label">Nome</label>
+        <input id="wa-link-name" class="form-control" type="text" name="name"
+            placeholder="Nome do link WhatsApp (opcional)" data-links-name>
+
         <label for="wa-phone" class="form-label">Digite seu numero de telefone WhatsApp</label>
         <input id="wa-phone" class="form-control" type="text" inputmode="numeric" placeholder="5599999999999" value="55"
             required data-wa-phone>
@@ -17,7 +21,7 @@
     </div>
 
     <p class="feedback mt-2" data-links-feedback aria-live="polite"></p>
-    
+
 </form>
 @endsection
 
@@ -31,6 +35,7 @@
 
 @section('qr-result-content')
 <div class="qr-result-area" data-links-result hidden>
+    <p class="mb-2">Nome: <span data-result-name></span></p>
     <img src="" alt="QR Code gerado" data-result-qr>
     <a href="#" target="_blank" rel="noreferrer" class="qr-result-link" data-result-link></a>
 </div>
@@ -47,8 +52,8 @@
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
-                    <h3 class="h5 mb-1">Detalhes do link <span data-detail-title></span></h3>
-                    <p class="text-body-secondary small mb-0">QR Code gerado a partir do slug salvo.</p>
+                    <h3 class="h5 mb-1">Detalhes do link <span data-detail-name-title></span></h3>
+                    <p class="text-body-secondary small mb-0">QR Code gerado a partir do nome salvo.</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -56,6 +61,9 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="detail-card">
+                            <p class="detail-label">Nome</p>
+                            <div class="small text-break" data-detail-name></div>
+                            <hr>
                             <span class="detail-label">Link curto</span>
                             <a href="#" target="_blank" rel="noreferrer" class="text-decoration-none small"
                                 data-detail-url></a>
@@ -92,13 +100,17 @@
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
-                    <h3 class="h5 mb-1">Editar slug <span data-edit-slug></span></h3>
-                    <p class="text-body-secondary small mb-0">Apenas o destino do redirecionamento sera alterado.</p>
+                    <h3 class="h5 mb-1">Editar nome: <span data-edit-nome></span></h3>
+                    <p class="text-body-secondary small mb-0">Nome e destino do redirecionamento podem ser alterados.
+                    </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
             </div>
             <form class="modal-body px-4 pb-4" data-edit-form>
                 <div class="mb-3">
+                    <label for="edit-name" class="form-label">Editar Nome do Link</label>
+                    <input id="edit-name" class="form-control" type="text" data-edit-name>
+                    <hr>
                     <label for="edit-url" class="form-label">Nova URL de destino</label>
                     <input id="edit-url" class="form-control" type="url" required data-edit-url>
                 </div>

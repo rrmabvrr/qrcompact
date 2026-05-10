@@ -54,7 +54,7 @@
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
-                    <h3 class="h5 mb-1">Detalhes do link <span data-detail-title></span></h3>
+                    <h3 class="h5 mb-1">Detalhes do link <span data-detail-name-title></span></h3>
                     <p class="text-body-secondary small mb-0">QR Code gerado a partir do nome salvo.</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -102,7 +102,7 @@
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 px-4 pt-4">
                 <div>
-                    <h3 class="h5 mb-1">Editar link: <span data-edit-nome></span></h3>
+                    <h3 class="h5 mb-1">Editar nome: <span data-edit-nome></span></h3>
                     <p class="text-body-secondary small mb-0">Nome e destino do redirecionamento podem ser alterados.
                     </p>
                 </div>

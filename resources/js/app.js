@@ -81,6 +81,10 @@ function formatDate(isoString) {
 }
 
 function setFeedback(element, message, isError = false) {
+    if (!element) {
+        return;
+    }
+
     element.textContent = message;
     element.classList.remove('is-success');
     element.classList.toggle('is-error', isError);
@@ -88,6 +92,10 @@ function setFeedback(element, message, isError = false) {
 }
 
 function setSuccessFeedback(element, message) {
+    if (!element) {
+        return;
+    }
+
     setFeedback(element, message, false);
     element.classList.add('is-success');
 }
@@ -109,7 +117,7 @@ function setupLinksPage() {
     const emptyState = document.querySelector('[data-links-empty]');
     const detailModal = document.querySelector('[data-detail-modal]');
     const qrPlaceholder = document.querySelector('[data-qr-placeholder]');
-    const detailTitle = document.querySelector('[data-detail-title]');
+    const detailTitle = document.querySelector('[data-detail-name-title]');
     const detailName = document.querySelector('[data-detail-name]');
     const detailUrl = document.querySelector('[data-detail-url]');
     const detailDestination = document.querySelector('[data-detail-destination]');
@@ -118,7 +126,7 @@ function setupLinksPage() {
     const detailQr = document.querySelector('[data-detail-qr]');
     const editModal = document.querySelector('[data-edit-modal]');
     const editForm = document.querySelector('[data-edit-form]');
-    const editNameTitle = document.querySelector('[data-edit-nome]') || document.querySelector('[data-edit-slug]');
+    const editNameTitle = document.querySelector('[data-edit-nome]');
     const editName = document.querySelector('[data-edit-name]');
     const editUrl = document.querySelector('[data-edit-url]');
     const editFeedback = document.querySelector('[data-edit-feedback]');
@@ -196,21 +204,61 @@ function setupLinksPage() {
 
             const article = document.createElement('article');
             article.className = 'link-item';
-            article.innerHTML = `
-                    <div class="link-item-info">
-                        <span class="link-target">Nome: ${displayName}</span>
-                        <div class="link-head">
-                            <a href="${item.shortUrl}" target="_blank" rel="noreferrer" class="link-short">${item.shortUrl}</a>
-                            ${badge}
-                        </div>
-                        <span class="link-target" title="${item.originalUrl}">${compactUrlText(item.originalUrl, 60)}</span>
-                        <span class="link-target">Cliques: ${clicks}</span>
-                    </div>
-                    <div class="link-actions">
-                        <button type="button" class="btn-action" data-action="detail" data-slug="${item.slug}">Ver QR</button>
-                        <button type="button" class="btn-action" data-action="edit" data-slug="${item.slug}" data-name="${displayName}" data-url="${item.originalUrl}">Editar</button>
-                    </div>
-                `;
+
+            const info = document.createElement('div');
+            info.className = 'link-item-info';
+
+            const name = document.createElement('span');
+            name.className = 'link-target';
+            name.textContent = `Nome: ${displayName}`;
+
+            const head = document.createElement('div');
+            head.className = 'link-head';
+
+            const shortLink = document.createElement('a');
+            shortLink.href = item.shortUrl;
+            shortLink.target = '_blank';
+            shortLink.rel = 'noreferrer';
+            shortLink.className = 'link-short';
+            shortLink.textContent = item.shortUrl;
+            head.appendChild(shortLink);
+
+            if (badge) {
+                head.insertAdjacentHTML('beforeend', badge);
+            }
+
+            const target = document.createElement('span');
+            target.className = 'link-target';
+            target.title = item.originalUrl;
+            target.textContent = compactUrlText(item.originalUrl, 60);
+
+            const clickCounter = document.createElement('span');
+            clickCounter.className = 'link-target';
+            clickCounter.textContent = `Cliques: ${clicks}`;
+
+            info.append(name, head, target, clickCounter);
+
+            const actions = document.createElement('div');
+            actions.className = 'link-actions';
+
+            const detailButton = document.createElement('button');
+            detailButton.type = 'button';
+            detailButton.className = 'btn-action';
+            detailButton.dataset.action = 'detail';
+            detailButton.dataset.slug = item.slug;
+            detailButton.textContent = 'Ver QR';
+
+            const editButton = document.createElement('button');
+            editButton.type = 'button';
+            editButton.className = 'btn-action';
+            editButton.dataset.action = 'edit';
+            editButton.dataset.slug = item.slug;
+            editButton.dataset.name = displayName;
+            editButton.dataset.url = item.originalUrl;
+            editButton.textContent = 'Editar';
+
+            actions.append(detailButton, editButton);
+            article.append(info, actions);
             list.appendChild(article);
         });
     }
@@ -225,10 +273,18 @@ function setupLinksPage() {
     }
 
     function openModal(modal) {
+        if (!modal) {
+            return;
+        }
+
         bootstrap.Modal.getOrCreateInstance(modal).show();
     }
 
     function closeModal(modal) {
+        if (!modal) {
+            return;
+        }
+
         bootstrap.Modal.getOrCreateInstance(modal).hide();
     }
 
@@ -245,7 +301,7 @@ function setupLinksPage() {
             const fallbackWhatsappName = waPhoneInput
                 ? `WhatsApp ${waPhoneInput.value.trim()}`
                 : 'WhatsApp';
-            const name = mode === 'whatsapp' ? fallbackWhatsappName : typedName;
+            const name = typedName || (mode === 'whatsapp' ? fallbackWhatsappName : '');
 
             const payload = await requestJson('/api/shorten', {
                 method: 'POST',
@@ -290,15 +346,19 @@ function setupLinksPage() {
         if (action === 'detail') {
             try {
                 const payload = await requestJson(`/api/links/${slug}`, {}, 'Nao foi possivel carregar os detalhes do link.');
-                detailTitle.textContent = payload.slug;
+                if (detailTitle) detailTitle.textContent = payload.name || payload.slug;
                 if (detailName) detailName.textContent = payload.name || '-';
-                detailUrl.href = payload.shortUrl;
-                detailUrl.textContent = payload.shortUrl;
-                detailDestination.textContent = payload.originalUrl;
-                detailCreatedAt.textContent = formatDate(payload.createdAt);
-                detailUpdatedAt.textContent = formatDate(payload.updatedAt);
-                detailQr.src = payload.qrCodeDataUrl;
-                detailQr.alt = `QR Code do link ${payload.slug}`;
+                if (detailUrl) {
+                    detailUrl.href = payload.shortUrl;
+                    detailUrl.textContent = payload.shortUrl;
+                }
+                if (detailDestination) detailDestination.textContent = payload.originalUrl;
+                if (detailCreatedAt) detailCreatedAt.textContent = formatDate(payload.createdAt);
+                if (detailUpdatedAt) detailUpdatedAt.textContent = formatDate(payload.updatedAt);
+                if (detailQr) {
+                    detailQr.src = payload.qrCodeDataUrl;
+                    detailQr.alt = `QR Code do link ${payload.slug}`;
+                }
                 openModal(detailModal);
             } catch (error) {
                 setFeedback(feedback, error.message, true);
@@ -310,47 +370,54 @@ function setupLinksPage() {
             editingName = button.dataset.name || '';
             if (editNameTitle) editNameTitle.textContent = button.dataset.name || slug;
             if (editName) editName.value = button.dataset.name || '';
-            editUrl.value = button.dataset.url || '';
-            setFeedback(editFeedback, '');
+            if (editUrl) editUrl.value = button.dataset.url || '';
+            if (editFeedback) setFeedback(editFeedback, '');
             openModal(editModal);
             if (editName) {
                 editName.focus();
                 editName.select();
+            } else if (editUrl) {
+                editUrl.focus();
+                editUrl.select();
             }
         }
     });
 
-    editForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!editingSlug) {
-            return;
-        }
+    if (editForm) {
+        editForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!editingSlug || !editUrl) {
+                return;
+            }
 
-        setFeedback(editFeedback, 'Salvando alteracoes...');
+            if (editFeedback) setFeedback(editFeedback, 'Salvando alteracoes...');
 
-        try {
-            const payload = await requestJson(`/api/links/${editingSlug}`, {
-                method: 'PUT',
-                body: JSON.stringify({
-                    name: editName ? editName.value.trim() : editingName,
-                    url: editUrl.value.trim(),
-                }),
-            }, 'Nao foi possivel atualizar o link.');
+            try {
+                const payload = await requestJson(`/api/links/${editingSlug}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        name: editName ? editName.value.trim() : editingName,
+                        url: editUrl.value.trim(),
+                    }),
+                }, 'Nao foi possivel atualizar o link.');
 
-            closeModal(editModal);
-            setSuccessFeedback(feedback, payload.message || 'Link atualizado com sucesso.');
-            await loadLinks();
-        } catch (error) {
-            setFeedback(editFeedback, error.message, true);
-        }
-    });
+                closeModal(editModal);
+                setSuccessFeedback(feedback, payload.message || 'Link atualizado com sucesso.');
+                await loadLinks();
+            } catch (error) {
+                if (editFeedback) setFeedback(editFeedback, error.message, true);
+            }
+        });
+    }
 
-    editModal.addEventListener('hidden.bs.modal', () => {
-        editingSlug = null;
-        editingName = '';
-        editForm.reset();
-        setFeedback(editFeedback, '');
-    });
+    if (editModal && editForm) {
+        editModal.addEventListener('hidden.bs.modal', () => {
+            editingSlug = null;
+            editingName = '';
+            editForm.reset();
+            if (editFeedback) setFeedback(editFeedback, '');
+        });
+    }
 
     loadLinks();
 }
