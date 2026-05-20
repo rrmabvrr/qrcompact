@@ -7,7 +7,7 @@
 
 @if (session('status'))
 <div class="alert alert-success" role="status">
-    {{ session('status') }}
+    {{ __(session('status')) }}
 </div>
 @endif
 
@@ -15,9 +15,7 @@
     @csrf
     <div class="col-12">
         <label for="email" class="form-label">E-mail</label>
-        <input id="email" name="email" type="email" value="{{ old('email') }}"
-            class="form-control @error('email') is-invalid @enderror" placeholder="email@exemplo.com" required
-            autofocus>
+        <input id="email" name="email" type="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" placeholder="email@exemplo.com" required autofocus>
         @error('email')
         <div class="invalid-feedback">{{ $message }}</div>
         @enderror
