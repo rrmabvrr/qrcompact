@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Link;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
@@ -10,20 +11,22 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LinkService
 {
-    public function latest(): Collection
+    public function latestForUser(User $user): Collection
     {
         return Link::query()
+            ->where('user_id', $user->id)
             ->latest()
             ->limit(100)
             ->get();
     }
 
-    public function create(?string $name, string $originalUrl): Link
+    public function createForUser(User $user, ?string $name, string $originalUrl): Link
     {
         for ($attempt = 0; $attempt < 10; $attempt++) {
             try {
                 $slug = $this->generateSlug();
                 return Link::query()->create([
+                    'user_id' => $user->id,
                     'name' => $name ?: $slug,
                     'slug' => $slug,
                     'original_url' => $originalUrl,
@@ -38,15 +41,29 @@ class LinkService
         abort(500, 'Nao foi possivel gerar um slug unico apos 10 tentativas.');
     }
 
-    public function update(string $slug, ?string $name, string $originalUrl): Link
+    public function updateForUser(User $user, string $slug, ?string $name, string $originalUrl): Link
     {
-        $link = $this->findBySlugOrFail($slug);
+        $link = $this->findBySlugForUserOrFail($user, $slug);
         $link->update([
             'name' => $name ?: $slug,
             'original_url' => $originalUrl,
         ]);
 
         return $link->refresh();
+    }
+
+    public function findBySlugForUserOrFail(User $user, string $slug): Link
+    {
+        $link = Link::query()
+            ->where('user_id', $user->id)
+            ->where('slug', $slug)
+            ->first();
+
+        if (! $link) {
+            throw new NotFoundHttpException('Link curto nao encontrado');
+        }
+
+        return $link;
     }
 
     public function findBySlugOrFail(string $slug): Link

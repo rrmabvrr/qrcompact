@@ -11,6 +11,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [EmailLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [EmailLoginController::class, 'sendCode'])->name('login.send-code');
     Route::post('/login/senha', [EmailLoginController::class, 'loginWithPassword'])->name('login.password');
+    Route::post('/cadastro/senha', [EmailLoginController::class, 'registerWithPassword'])->name('register.password');
     Route::get('/login/verificar', [EmailLoginController::class, 'showVerifyForm'])->name('login.verify.form');
     Route::post('/login/verificar', [EmailLoginController::class, 'verifyCode'])->name('login.verify');
 

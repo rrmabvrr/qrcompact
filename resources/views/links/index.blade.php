@@ -5,21 +5,17 @@
     <div class="mb-2">
 
         <label for="link-name" class="form-label">Nome</label>
-        <input id="link-name" class="form-control" type="text" name="name"
-            placeholder="Nome do link (opcional - será gerado automaticamente se vazio)" data-links-name>
+        <input id="link-name" class="form-control" type="text" name="name" placeholder="Nome do link (opcional - será gerado automaticamente se vazio)" data-links-name>
         <label for="link-url" class="form-label">URL</label>
-        <input id="link-url" class="form-control" type="url" name="url" placeholder="http://..." required
-            data-links-url>
+        <input id="link-url" class="form-control" type="url" name="url" placeholder="http://..." required data-links-url>
     </div>
 
     <div class="mb-2" data-whatsapp-fields hidden>
         <label for="wa-phone" class="form-label">Digite seu numero de telefone WhatsApp</label>
-        <input id="wa-phone" class="form-control" type="text" inputmode="numeric" placeholder="5599999999999" value="55"
-            data-wa-phone>
+        <input id="wa-phone" class="form-control" type="text" inputmode="numeric" placeholder="5599999999999" value="55" data-wa-phone>
 
         <label for="wa-message" class="form-label mt-2">Mensagem personalizada</label>
-        <textarea id="wa-message" class="form-control" rows="3" placeholder="Ola! Vim pelo QR Code."
-            data-wa-message></textarea>
+        <textarea id="wa-message" class="form-control" rows="3" placeholder="Ola! Vim pelo QR Code." data-wa-message></textarea>
         <div class="form-text">Formato do numero: codigo do pais + DDD + numero. Exemplo: 5599999999999</div>
     </div>
 
@@ -67,8 +63,7 @@
                             <div class="small text-break" data-detail-name></div>
                             <hr>
                             <span class="detail-label">Link curto</span>
-                            <a href="#" target="_blank" rel="noreferrer" class="text-decoration-none small"
-                                data-detail-url></a>
+                            <a href="#" target="_blank" rel="noreferrer" class="text-decoration-none small" data-detail-url></a>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -83,6 +78,21 @@
                 </div>
 
                 <img src="" alt="QR Code do link" class="qr-image" data-detail-qr>
+
+                <div class="mt-3">
+                    <p class="detail-label mb-2">Formatos disponíveis para download:</p>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <button type="button" class="btn btn-sm btn-outline-info" data-download-qr-svg>
+                            <i class="bi bi-download"></i> SVG (Vetorial)
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-info" data-download-qr-png>
+                            <i class="bi bi-download"></i> PNG (Imagem)
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-info" data-download-qr-jpg>
+                            <i class="bi bi-download"></i> JPG (Comprimido)
+                        </button>
+                    </div>
+                </div>
 
                 <div class="col-md-12 mt-4">
                     <div class="detail-card">

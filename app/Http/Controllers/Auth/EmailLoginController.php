@@ -46,6 +46,33 @@ class EmailLoginController extends Controller
             ->withErrors(['email' => 'Email ou senha incorretos.']);
     }
 
+    public function registerWithPassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $email = mb_strtolower(trim($validated['email']));
+
+        if (User::query()->where('email', $email)->exists()) {
+            return back()
+                ->withInput(['email' => $email, '_panel' => 'register'])
+                ->withErrors(['email' => 'Este email ja esta cadastrado. Tente entrar com senha.']);
+        }
+
+        $user = User::query()->create([
+            'email' => $email,
+            'password' => $validated['password'],
+            'email_verified_at' => now(),
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('links.index'));
+    }
+
     public function sendCode(Request $request): RedirectResponse
     {
         $validated = $request->validate([

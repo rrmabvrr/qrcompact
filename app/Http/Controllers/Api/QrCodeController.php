@@ -31,6 +31,7 @@ class QrCodeController extends Controller
                 'mode' => 'pix',
                 'payload' => $payload,
                 'qrCodeDataUrl' => $this->qrCodeService->toDataUri($payload, 300),
+                'qrCodeSvgDataUrl' => $this->qrCodeService->toSvgDataUri($payload, 300),
                 'message' => 'Payload Pix e QR Code gerados com sucesso.',
             ]);
         }
@@ -45,6 +46,7 @@ class QrCodeController extends Controller
         return response()->json([
             'mode' => 'generic',
             'qrCodeDataUrl' => $this->qrCodeService->toDataUri($data, 300),
+            'qrCodeSvgDataUrl' => $this->qrCodeService->toSvgDataUri($data, 300),
             'message' => 'QR Code gerado com sucesso.',
         ]);
     }

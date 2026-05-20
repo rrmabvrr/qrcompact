@@ -9,6 +9,7 @@ use App\Services\LinkService;
 use App\Services\QrCodeService;
 use App\Services\SafeBrowsingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LinkController extends Controller
@@ -19,9 +20,9 @@ class LinkController extends Controller
         private readonly SafeBrowsingService $safeBrowsingService,
     ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $links = $this->linkService->latest();
+        $links = $this->linkService->latestForUser($request->user());
 
         return response()->json(
             $links->map(fn($link) => $this->linkService->serialize($link))->all()
@@ -38,20 +39,21 @@ class LinkController extends Controller
             return $safeBrowsingError;
         }
 
-        $link = $this->linkService->create($name, $url);
+        $link = $this->linkService->createForUser($request->user(), $name, $url);
         $shortUrl = $this->linkService->shortUrl($link);
 
         return response()->json([
             ...$this->linkService->serialize($link),
             'qrCodeDataUrl' => $this->qrCodeService->toDataUri($shortUrl, 260),
+            'qrCodeSvgDataUrl' => $this->qrCodeService->toSvgDataUri($shortUrl, 260),
             'message' => 'Link curto criado com sucesso.',
         ], 201);
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(Request $request, string $slug): JsonResponse
     {
         try {
-            $link = $this->linkService->findBySlugOrFail($slug);
+            $link = $this->linkService->findBySlugForUserOrFail($request->user(), $slug);
         } catch (NotFoundHttpException $exception) {
             return response()->json([
                 'message' => 'Link curto nao encontrado',
@@ -63,6 +65,7 @@ class LinkController extends Controller
         return response()->json([
             ...$this->linkService->serialize($link),
             'qrCodeDataUrl' => $this->qrCodeService->toDataUri($shortUrl, 260),
+            'qrCodeSvgDataUrl' => $this->qrCodeService->toSvgDataUri($shortUrl, 260),
         ]);
     }
 
@@ -77,7 +80,7 @@ class LinkController extends Controller
         }
 
         try {
-            $link = $this->linkService->update($slug, $name, $url);
+            $link = $this->linkService->updateForUser($request->user(), $slug, $name, $url);
         } catch (NotFoundHttpException $exception) {
             return response()->json([
                 'message' => 'Link curto nao encontrado',
