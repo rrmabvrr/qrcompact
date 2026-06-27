@@ -20,8 +20,17 @@ class LinkService
             ->get();
     }
 
-    public function createForUser(User $user, ?string $name, string $originalUrl): Link
+    public function createForUser(User $user, ?string $name, string $originalUrl, ?string $customSlug = null): Link
     {
+        if ($customSlug) {
+            return Link::query()->create([
+                'user_id' => $user->id,
+                'name' => $name ?: $customSlug,
+                'slug' => $customSlug,
+                'original_url' => $originalUrl,
+            ]);
+        }
+
         for ($attempt = 0; $attempt < 10; $attempt++) {
             try {
                 $slug = $this->generateSlug();
@@ -41,11 +50,12 @@ class LinkService
         abort(500, 'Nao foi possivel gerar um slug unico apos 10 tentativas.');
     }
 
-    public function updateForUser(User $user, string $slug, ?string $name, string $originalUrl): Link
+    public function updateForUser(User $user, string $slug, ?string $name, string $originalUrl, ?string $newSlug = null): Link
     {
         $link = $this->findBySlugForUserOrFail($user, $slug);
         $link->update([
-            'name' => $name ?: $slug,
+            'name' => $name ?: ($newSlug ?: $slug),
+            'slug' => $newSlug ?: $link->slug,
             'original_url' => $originalUrl,
         ]);
 

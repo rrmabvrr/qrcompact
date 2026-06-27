@@ -33,13 +33,14 @@ class LinkController extends Controller
     {
         $name = $request->validated('name') ?? '';
         $url = $request->validated('url');
+        $slug = $request->validated('slug');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 
         if ($safeBrowsingError instanceof JsonResponse) {
             return $safeBrowsingError;
         }
 
-        $link = $this->linkService->createForUser($request->user(), $name, $url);
+        $link = $this->linkService->createForUser($request->user(), $name, $url, $slug);
         $shortUrl = $this->linkService->shortUrl($link);
 
         return response()->json([
@@ -73,6 +74,7 @@ class LinkController extends Controller
     {
         $name = $request->validated('name') ?? '';
         $url = $request->validated('url');
+        $newSlug = $request->validated('slug');
         $safeBrowsingError = $this->validateSafeBrowsing($url);
 
         if ($safeBrowsingError instanceof JsonResponse) {
@@ -80,7 +82,7 @@ class LinkController extends Controller
         }
 
         try {
-            $link = $this->linkService->updateForUser($request->user(), $slug, $name, $url);
+            $link = $this->linkService->updateForUser($request->user(), $slug, $name, $url, $newSlug);
         } catch (NotFoundHttpException $exception) {
             return response()->json([
                 'message' => 'Link curto nao encontrado',

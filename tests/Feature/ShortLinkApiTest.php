@@ -159,6 +159,90 @@ class ShortLinkApiTest extends TestCase
         ]);
     }
 
+    public function test_it_updates_a_link_slug(): void
+    {
+        $owner = $this->createAuthenticatedUser('owner-update-slug@example.com');
+
+        Link::query()->create([
+            'user_id' => $owner->id,
+            'name' => 'Link antigo',
+            'slug' => 'OldSlug1',
+            'original_url' => 'https://example.com/antigo',
+        ]);
+
+        // Update name, URL, and slug
+        $response = $this->putJson('/api/links/OldSlug1', [
+            'name' => 'Link Novo Nome',
+            'slug' => 'NewSlug2',
+            'url' => 'https://example.com/novo',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('slug', 'NewSlug2')
+            ->assertJsonPath('originalUrl', 'https://example.com/novo')
+            ->assertJsonPath('name', 'Link Novo Nome')
+            ->assertJsonPath('message', 'Link atualizado com sucesso.');
+
+        $this->assertDatabaseHas('links', [
+            'slug' => 'NewSlug2',
+            'original_url' => 'https://example.com/novo',
+            'name' => 'Link Novo Nome',
+            'user_id' => $owner->id,
+        ]);
+
+        $this->assertDatabaseMissing('links', [
+            'slug' => 'OldSlug1',
+        ]);
+    }
+
+    public function test_it_rejects_invalid_updated_slugs(): void
+    {
+        $owner = $this->createAuthenticatedUser('owner-update-invalid@example.com');
+
+        Link::query()->create([
+            'user_id' => $owner->id,
+            'name' => 'Link Teste',
+            'slug' => 'Slug123',
+            'original_url' => 'https://example.com/original',
+        ]);
+
+        // 1. Duplicate slug
+        Link::query()->create([
+            'user_id' => $owner->id,
+            'name' => 'Link Outro',
+            'slug' => 'Outro456',
+            'original_url' => 'https://example.com/outro',
+        ]);
+
+        $response = $this->putJson('/api/links/Slug123', [
+            'url' => 'https://example.com/novo',
+            'slug' => 'Outro456',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 2. Too short
+        $response = $this->putJson('/api/links/Slug123', [
+            'url' => 'https://example.com/novo',
+            'slug' => 'ab',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 3. Too long
+        $response = $this->putJson('/api/links/Slug123', [
+            'url' => 'https://example.com/novo',
+            'slug' => 'sluglongo12',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 4. Reserved word
+        $response = $this->putJson('/api/links/Slug123', [
+            'url' => 'https://example.com/novo',
+            'slug' => 'pix',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+    }
+
     public function test_it_lists_only_links_from_authenticated_user(): void
     {
         $owner = $this->createAuthenticatedUser('owner-list@example.com');
@@ -382,5 +466,73 @@ class ShortLinkApiTest extends TestCase
             ->assertJsonValidationErrors(['url']);
 
         $this->assertDatabaseCount('links', 0);
+    }
+
+    public function test_it_shortens_with_custom_slug(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'promo10abc', // Exactly 10 characters, alphanumeric
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('slug', 'promo10abc')
+            ->assertJsonPath('originalUrl', 'https://example.com/custom');
+
+        $this->assertDatabaseHas('links', [
+            'slug' => 'promo10abc',
+            'original_url' => 'https://example.com/custom',
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_it_rejects_invalid_custom_slugs(): void
+    {
+        $user = $this->createAuthenticatedUser();
+
+        // 1. Too short (less than 3 characters)
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'ab',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 2. Too long (more than 10 characters)
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'promo10abcd',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 3. Non-alphanumeric characters
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'promo-10',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 4. Reserved keywords
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'whatsapp',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
+
+        // 5. Already in use
+        Link::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Existing',
+            'slug' => 'existing',
+            'original_url' => 'https://example.com/exist',
+        ]);
+
+        $response = $this->postJson('/api/shorten', [
+            'url' => 'https://example.com/custom',
+            'slug' => 'existing',
+        ]);
+        $response->assertStatus(422)->assertJsonValidationErrors(['slug']);
     }
 }

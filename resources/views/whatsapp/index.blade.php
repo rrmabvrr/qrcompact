@@ -17,6 +17,10 @@
         <textarea id="wa-message" class="form-control" rows="3" placeholder="Ola! Vim pelo QR Code."
             data-wa-message></textarea>
 
+        <label for="wa-link-slug" class="form-label mt-2">Slug personalizado</label>
+        <input id="wa-link-slug" class="form-control" type="text" name="slug"
+            placeholder="Ex: promo10 (opcional - até 10 caracteres)" data-links-slug maxlength="10">
+
         <div class="form-text">Formato do numero: codigo do pais + DDD + numero. Exemplo: 5599999999999</div>
     </div>
 
@@ -110,6 +114,9 @@
                 <div class="mb-3">
                     <label for="edit-name" class="form-label">Editar Nome do Link</label>
                     <input id="edit-name" class="form-control" type="text" data-edit-name>
+                    <hr>
+                    <label for="edit-slug" class="form-label">Editar Slug personalizado</label>
+                    <input id="edit-slug" class="form-control" type="text" data-edit-slug maxlength="10">
                     <hr>
                     <label for="edit-url" class="form-label">Nova URL de destino</label>
                     <input id="edit-url" class="form-control" type="url" required data-edit-url>

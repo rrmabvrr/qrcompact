@@ -10,10 +10,10 @@ Route::middleware(['web', 'auth'])->group(function () {
         ->middleware('throttle:shorten')
         ->name('api.links.store');
     Route::get('/links/{slug}', [LinkController::class, 'show'])
-        ->where('slug', '[A-Za-z0-9]{6}')
+        ->where('slug', '[A-Za-z0-9]{3,10}')
         ->name('api.links.show');
     Route::put('/links/{slug}', [LinkController::class, 'update'])
-        ->where('slug', '[A-Za-z0-9]{6}')
+        ->where('slug', '[A-Za-z0-9]{3,10}')
         ->name('api.links.update');
 });
 

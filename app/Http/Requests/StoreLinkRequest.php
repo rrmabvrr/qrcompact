@@ -17,6 +17,15 @@ class StoreLinkRequest extends FormRequest
         return [
             'name' => ['nullable', 'string', 'max:120'],
             'url' => ['required', 'string', 'url', 'regex:/^https?:\/\//i', new SafeUrl],
+            'slug' => [
+                'nullable',
+                'string',
+                'alpha_num',
+                'min:3',
+                'max:10',
+                'unique:links,slug',
+                'not_in:api,pix,whatsapp,up,login,cadastro,esqueci-senha,redefinir-senha,perfil,logout',
+            ],
         ];
     }
 
@@ -28,6 +37,11 @@ class StoreLinkRequest extends FormRequest
             'url.required' => 'Informe uma URL valida.',
             'url.url' => 'Informe uma URL valida.',
             'url.regex' => 'A URL deve comecar com http:// ou https://.',
+            'slug.alpha_num' => 'O slug personalizado deve conter apenas letras e numeros.',
+            'slug.min' => 'O slug personalizado deve ter pelo menos 3 caracteres.',
+            'slug.max' => 'O slug personalizado deve ter no maximo 10 caracteres.',
+            'slug.unique' => 'Este slug personalizado ja esta em uso.',
+            'slug.not_in' => 'Este slug personalizado e reservado e nao pode ser usado.',
         ];
     }
 }

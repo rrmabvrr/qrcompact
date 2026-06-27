@@ -34,5 +34,5 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/{slug}', RedirectController::class)
-    ->where('slug', '^(?!api$|pix$|whatsapp$|up$)[A-Za-z0-9]{6}$')
+    ->where('slug', '^(?!api$|pix$|whatsapp$|up$)[A-Za-z0-9]{3,10}$')
     ->name('links.redirect');

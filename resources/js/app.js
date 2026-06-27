@@ -127,6 +127,7 @@ function setupLinksPage() {
 
     const nameInput = document.querySelector("[data-links-name]");
     const urlInput = document.querySelector("[data-links-url]");
+    const slugInput = document.querySelector("[data-links-slug]");
     const feedback = document.querySelector("[data-links-feedback]");
     const result = document.querySelector("[data-links-result]");
     const resultName = document.querySelector("[data-result-name]");
@@ -149,6 +150,7 @@ function setupLinksPage() {
     const editForm = document.querySelector("[data-edit-form]");
     const editNameTitle = document.querySelector("[data-edit-nome]");
     const editName = document.querySelector("[data-edit-name]");
+    const editSlug = document.querySelector("[data-edit-slug]");
     const editUrl = document.querySelector("[data-edit-url]");
     const editFeedback = document.querySelector("[data-edit-feedback]");
     const modeInputs = document.querySelectorAll("[data-link-mode]");
@@ -322,6 +324,7 @@ function setupLinksPage() {
         try {
             const mode = getSelectedMode();
             const typedName = nameInput ? nameInput.value.trim() : "";
+            const typedSlug = slugInput ? slugInput.value.trim() : "";
             const urlToShorten =
                 mode === "whatsapp"
                     ? buildWhatsAppUrl()
@@ -338,7 +341,7 @@ function setupLinksPage() {
                 "/api/shorten",
                 {
                     method: "POST",
-                    body: JSON.stringify({ name, url: urlToShorten }),
+                    body: JSON.stringify({ name, url: urlToShorten, slug: typedSlug }),
                 },
                 "Nao foi possivel gerar o link curto.",
             );
@@ -351,6 +354,7 @@ function setupLinksPage() {
             resultQr.src = payload.qrCodeDataUrl;
             resultQr.alt = `QR Code do link ${payload.slug}`;
             if (nameInput) nameInput.value = "";
+            if (slugInput) slugInput.value = "";
             if (mode === "whatsapp") {
                 if (waPhoneInput) waPhoneInput.value = "55";
                 if (waMessageInput) waMessageInput.value = "";
@@ -419,6 +423,7 @@ function setupLinksPage() {
             if (editNameTitle)
                 editNameTitle.textContent = button.dataset.name || slug;
             if (editName) editName.value = button.dataset.name || "";
+            if (editSlug) editSlug.value = slug || "";
             if (editUrl) editUrl.value = button.dataset.url || "";
             if (editFeedback) setFeedback(editFeedback, "");
             openModal(editModal);
@@ -442,6 +447,8 @@ function setupLinksPage() {
             if (editFeedback)
                 setFeedback(editFeedback, "Salvando alteracoes...");
 
+            const newSlug = editSlug ? editSlug.value.trim() : "";
+
             try {
                 const payload = await requestJson(
                     `/api/links/${editingSlug}`,
@@ -451,6 +458,7 @@ function setupLinksPage() {
                             name: editName
                                 ? editName.value.trim()
                                 : editingName,
+                            slug: newSlug,
                             url: editUrl.value.trim(),
                         }),
                     },

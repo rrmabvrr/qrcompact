@@ -8,6 +8,8 @@
         <input id="link-name" class="form-control" type="text" name="name" placeholder="Nome do link (opcional - será gerado automaticamente se vazio)" data-links-name>
         <label for="link-url" class="form-label">URL</label>
         <input id="link-url" class="form-control" type="url" name="url" placeholder="http://..." required data-links-url>
+        <label for="link-slug" class="form-label mt-2">Slug personalizado</label>
+        <input id="link-slug" class="form-control" type="text" name="slug" placeholder="Ex: promo10 (opcional - até 10 caracteres)" data-links-slug maxlength="10">
     </div>
 
     <div class="mb-2" data-whatsapp-fields hidden>
@@ -122,6 +124,9 @@
                 <div class="mb-3">
                     <label for="edit-name" class="form-label">Editar Nome do Link</label>
                     <input id="edit-name" class="form-control" type="text" data-edit-name>
+                    <hr>
+                    <label for="edit-slug" class="form-label">Editar Slug personalizado</label>
+                    <input id="edit-slug" class="form-control" type="text" data-edit-slug maxlength="10">
                     <hr>
                     <label for="edit-url" class="form-label">Nova URL de destino</label>
                     <input id="edit-url" class="form-control" type="url" required data-edit-url>
