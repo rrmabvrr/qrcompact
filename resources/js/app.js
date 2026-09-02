@@ -119,6 +119,20 @@ function setSuccessFeedback(element, message) {
     element.classList.add("is-success");
 }
 
+function setSubmitLoading(form, isLoading) {
+    if (!form) return;
+    const buttons = form.querySelectorAll('.btn-generate, button[type="submit"]');
+    buttons.forEach((btn) => {
+        if (isLoading) {
+            btn.classList.add("is-loading");
+            btn.disabled = true;
+        } else {
+            btn.classList.remove("is-loading");
+            btn.disabled = false;
+        }
+    });
+}
+
 function setupLinksPage() {
     const createForm = document.querySelector("[data-links-form]");
     if (!createForm) {
@@ -319,6 +333,7 @@ function setupLinksPage() {
 
     createForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+        setSubmitLoading(createForm, true);
         setFeedback(feedback, "Gerando link curto...");
 
         try {
@@ -368,6 +383,8 @@ function setupLinksPage() {
             await loadLinks();
         } catch (error) {
             setFeedback(feedback, error.message, true);
+        } finally {
+            setSubmitLoading(createForm, false);
         }
     });
 
@@ -577,6 +594,7 @@ function setupPixPage() {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        setSubmitLoading(form, true);
         setFeedback(feedback, "Gerando payload Pix e QR Code...");
 
         const payloadBody = {
@@ -613,6 +631,8 @@ function setupPixPage() {
             );
         } catch (error) {
             setFeedback(feedback, error.message, true);
+        } finally {
+            setSubmitLoading(form, false);
         }
     });
 
