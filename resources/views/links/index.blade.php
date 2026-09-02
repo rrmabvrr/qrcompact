@@ -27,7 +27,7 @@
 
 @section('left-column-extra')
 <div class="qrc-card">
-    <h2 class="section-heading">Últimos links</h2>
+    <h2 class="section-heading"><i class="bi bi-clock-history"></i> Últimos links</h2>
     <div data-links-list></div>
     <div class="empty-state" data-links-empty>Nenhum link criado ainda.</div>
 </div>

@@ -108,8 +108,15 @@
                         <span class="type-card"><span class="type-card-icon"><i class="bi bi-chat-left-text" aria-hidden="true"></i></span>SMS</span>
                     </div>
 
-                    <h3 class="content-label">Conteúdo</h3>
+                    <h3 class="content-label"><i class="bi bi-sliders"></i> Conteúdo</h3>
                     @yield('form-content')
+
+                    <div class="form-action-footer">
+                        <button type="submit" form="@yield('generate-form-id')" class="btn-generate">
+                            <i class="bi bi-qr-code-scan" aria-hidden="true"></i>
+                            <span>@yield('generate-label', 'Gerar QRCode')</span>
+                        </button>
+                    </div>
                 </div>
 
                 @yield('left-column-extra')
@@ -117,32 +124,40 @@
 
             <div>
                 <div class="qr-preview-panel">
+                    <div class="preview-header">
+                        <i class="bi bi-phone" aria-hidden="true"></i>
+                        <span>Visualização do QR Code</span>
+                    </div>
+
                     <div class="qr-samples-grid" data-qr-placeholder>
                         <div class="qr-sample-box">
-                            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-                                <rect x="4" y="4" width="30" height="30" rx="3" fill="#b8c5d6" />
-                                <rect x="10" y="10" width="18" height="18" fill="#dde4ef" rx="1.5" />
-                                <rect x="46" y="4" width="30" height="30" rx="3" fill="#b8c5d6" />
-                                <rect x="52" y="10" width="18" height="18" fill="#dde4ef" rx="1.5" />
-                                <rect x="4" y="46" width="30" height="30" rx="3" fill="#b8c5d6" />
-                                <rect x="10" y="52" width="18" height="18" fill="#dde4ef" rx="1.5" />
-                                <rect x="46" y="46" width="8" height="8" fill="#b8c5d6" />
-                                <rect x="58" y="46" width="8" height="8" fill="#b8c5d6" />
-                                <rect x="46" y="58" width="8" height="8" fill="#b8c5d6" />
-                                <rect x="70" y="58" width="6" height="6" fill="#b8c5d6" />
-                                <rect x="58" y="70" width="8" height="6" fill="#b8c5d6" />
+                            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+                                <rect x="4" y="4" width="30" height="30" rx="4" fill="#6366f1" />
+                                <rect x="10" y="10" width="18" height="18" fill="#161e2e" rx="2" />
+                                <rect x="46" y="4" width="30" height="30" rx="4" fill="#8b5cf6" />
+                                <rect x="52" y="10" width="18" height="18" fill="#161e2e" rx="2" />
+                                <rect x="4" y="46" width="30" height="30" rx="4" fill="#ec4899" />
+                                <rect x="10" y="52" width="18" height="18" fill="#161e2e" rx="2" />
+                                <rect x="46" y="46" width="9" height="9" fill="#6366f1" rx="1.5" />
+                                <rect x="59" y="46" width="9" height="9" fill="#8b5cf6" rx="1.5" />
+                                <rect x="46" y="59" width="9" height="9" fill="#ec4899" rx="1.5" />
+                                <rect x="71" y="59" width="5" height="5" fill="#6366f1" rx="1" />
+                                <rect x="59" y="71" width="9" height="5" fill="#8b5cf6" rx="1" />
                             </svg>
                         </div>
                     </div>
 
                     @yield('qr-result-content')
 
-                    <button type="submit" form="@yield('generate-form-id')" class="btn-generate">
-                        <i class="bi bi-eye" aria-hidden="true"></i>
-                        @yield('generate-label', 'Gerar QRCode')
-                    </button>
+                    <div class="p-3 pt-0">
+                        <button type="submit" form="@yield('generate-form-id')" class="btn-generate btn-generate-secondary">
+                            <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+                            <span>@yield('generate-label', 'Gerar QRCode')</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
         </div>
 
         @yield('content')

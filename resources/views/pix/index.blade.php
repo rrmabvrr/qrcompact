@@ -77,8 +77,9 @@
     </div>
 
     <div class="d-flex align-items-center gap-3 w-100">
-        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-pix-copy>Copiar
-            código</button>
+        <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3" data-pix-copy>
+            <i class="bi bi-copy me-1"></i> Copiar código
+        </button>
         <span class="feedback small" data-pix-copy-feedback aria-live="polite"></span>
     </div>
 </div>
